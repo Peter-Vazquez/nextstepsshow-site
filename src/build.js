@@ -372,7 +372,148 @@ ${pageFooter("../../")}
     body
   });
 }
+function generateHomePage(episodes) {
+  const featuredEpisodes = episodes.slice(0, 3);
+  const latestEpisodeCards = featuredEpisodes
+    .map((episode) => episodeCard(episode, "./"))
+    .join("\n");
 
+  const platformLinks = [
+    ["Apple Podcasts", site.platforms?.apple],
+    ["Spotify", site.platforms?.spotify],
+    ["iHeartRadio", site.platforms?.iheartradio],
+    ["Amazon Music", site.platforms?.amazon],
+    ["Podbean", site.platforms?.podbean],
+    ["RSS Feed", site.platforms?.rss]
+  ]
+    .map(([label, url]) => {
+      const safeUrl = url || "#";
+      return `<a href="${escapeHtml(safeUrl)}">${escapeHtml(label)}</a>`;
+    })
+    .join("\n          ");
+
+  const body = `
+${pageHeader("./")}
+
+  <main>
+
+    <section class="hero">
+      <div class="container hero-content">
+
+        <p class="eyebrow">${escapeHtml(site.tagline)}</p>
+
+        <h1>${escapeHtml(site.siteName)}</h1>
+
+        <p class="hero-text">
+          ${escapeHtml(site.description)}
+        </p>
+
+        <div class="hero-actions">
+          <a href="episodes/" class="button primary">Listen to Episodes</a>
+          <a href="advertise/" class="button secondary">Sponsor the Show</a>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="intro-section">
+      <div class="container intro-grid">
+
+        <div>
+          <h2>Conversations That Move People Forward</h2>
+
+          <p>
+            ${escapeHtml(site.siteName)} with ${escapeHtml(site.hostName)} brings together voices from politics, faith, business, culture, and community leadership. Each episode focuses on the issues shaping families, neighborhoods, churches, schools, businesses, and the future of our country.
+          </p>
+
+          <p>
+            The show is built on a simple idea: talk plainly, think clearly, and take the next right step.
+          </p>
+        </div>
+
+        <aside class="broadcast-card">
+          <h3>Listen on Radio</h3>
+
+          <p>
+            Catch ${escapeHtml(site.siteName)} through WYSL and affiliated stations.
+          </p>
+
+          <ul>
+            <li>92.1 FM</li>
+            <li>95.5 FM</li>
+            <li>1040 AM</li>
+            <li>WLEA 1480 AM</li>
+            <li>106.9 FM</li>
+            <li>WCKR 92.1 FM</li>
+          </ul>
+        </aside>
+
+      </div>
+    </section>
+
+    <section class="featured-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <p class="eyebrow">Recent Conversations</p>
+          <h2>Latest Episodes</h2>
+          <p>
+            The latest episodes below are generated automatically from the Podbean RSS feed.
+          </p>
+        </div>
+
+        <div class="episode-grid">
+${latestEpisodeCards}
+        </div>
+
+      </div>
+    </section>
+
+    <section class="platform-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <p class="eyebrow">Subscribe</p>
+          <h2>Listen Wherever You Get Podcasts</h2>
+        </div>
+
+        <div class="platform-links">
+          ${platformLinks}
+        </div>
+
+      </div>
+    </section>
+
+    <section class="sponsor-section">
+      <div class="container sponsor-box">
+
+        <div>
+          <p class="eyebrow">Partner With The Show</p>
+          <h2>Reach an Engaged Audience</h2>
+
+          <p>
+            Sponsor ${escapeHtml(site.siteName)} and connect your business, campaign, organization, or mission with listeners who care about faith, family, freedom, enterprise, and civic life.
+          </p>
+        </div>
+
+        <a href="advertise/" class="button primary">Become a Sponsor</a>
+
+      </div>
+    </section>
+
+  </main>
+
+${pageFooter("./")}
+`;
+
+  return baseHtml({
+    title: `${site.siteName} | Faith, Politics & Entrepreneurship`,
+    description: site.description,
+    cssPath: "css/styles.css",
+    jsPath: "js/main.js",
+    body
+  });
+}
 function parseEpisodesFromRss(rssText) {
   const parser = new XMLParser({
     ignoreAttributes: false,
@@ -462,6 +603,9 @@ async function build() {
 
   const episodesIndexHtml = generateEpisodesIndex(episodes);
   fs.writeFileSync(path.join(episodesDir, "index.html"), episodesIndexHtml, "utf8");
+
+  const homePageHtml = generateHomePage(episodes);
+  fs.writeFileSync(path.join(publicDir, "index.html"), homePageHtml, "utf8");
 
   for (const episode of episodes) {
     const episodeDir = path.join(episodesDir, episode.slug);
