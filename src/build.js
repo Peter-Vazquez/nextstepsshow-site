@@ -57,7 +57,6 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 90);
 }
-
 function formatDate(value) {
   if (!value) {
     return "";
@@ -75,21 +74,67 @@ function formatDate(value) {
     day: "numeric"
   });
 }
-
-function getRssTextField(value) {
-  if (!value) {
+function formatDuration(value) {
+  if (value === null || value === undefined || value === "") {
     return "";
   }
 
-  if (typeof value === "string") {
-    return value;
+  const rawValue = String(value).trim();
+
+  if (rawValue.includes(":")) {
+    return rawValue;
   }
 
-  if (typeof value === "object" && "#text" in value) {
-    return value["#text"];
+  const totalSeconds = Number(rawValue);
+
+  if (!Number.isFinite(totalSeconds)) {
+    return rawValue;
   }
 
-  return String(value);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  const paddedSeconds = String(seconds).padStart(2, "0");
+
+  if (hours > 0) {
+    const paddedMinutes = String(minutes).padStart(2, "0");
+    return `${hours}:${paddedMinutes}:${paddedSeconds}`;
+  }
+
+  return `${minutes}:${paddedSeconds}`;
+}
+
+function getRssTextField(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(getRssTextField).filter(Boolean).join(" ");
+  }
+
+  if (typeof value === "object") {
+    const preferredTextKeys = ["#text", "__cdata", "_cdata", "text", "_text"];
+
+    for (const key of preferredTextKeys) {
+      if (key in value) {
+        return getRssTextField(value[key]);
+      }
+    }
+
+    return Object.entries(value)
+      .filter(([key]) => !key.startsWith("@") && key !== "href" && key !== "url")
+      .map(([, nestedValue]) => getRssTextField(nestedValue))
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  return "";
 }
 
 function getEpisodeDescription(item) {
@@ -270,12 +315,12 @@ ${pageHeader("../")}
 
         <h2>Podcast Episodes</h2>
 
-        <p>
-          This page is generated from the Podbean RSS feed. New episodes can be added automatically when the site rebuilds.
+         <p>
+          Explore recent conversations from The Next Steps Show, featuring thoughtful interviews, timely commentary, and practical insight on the issues shaping families, communities, businesses, and civic life.
         </p>
 
         <p>
-          Podbean remains the podcast host. This website reads the feed and presents the episodes in a custom layout.
+          Browse the archive below to catch up on past episodes, revisit important conversations, and share programs with others.
         </p>
 
       </div>
@@ -349,7 +394,7 @@ ${pageHeader("../../")}
 
           <div class="episode-description">
             <p>
-              ${escapeHtml(stripHtml(episode.description))}
+              ${escapeHtml(episode.descriptionText)}
             </p>
           </div>
 
@@ -458,7 +503,7 @@ ${pageHeader("./")}
           <p class="eyebrow">Recent Conversations</p>
           <h2>Latest Episodes</h2>
           <p>
-            The latest episodes below are generated automatically from the Podbean RSS feed.
+            Listen to the latest conversations from The Next Steps Show.
           </p>
         </div>
 
@@ -541,14 +586,17 @@ function parseEpisodesFromRss(rssText) {
       const slugBase = slugify(title);
       const slug = slugBase || `episode-${index + 1}`;
 
+            const descriptionText = stripHtml(getRssTextField(description));
+
       return {
         title,
         slug,
         description,
-        excerpt: truncateText(description, 220),
+        descriptionText,
+        excerpt: truncateText(descriptionText, 220),
         date: item.pubDate || "",
         dateDisplay: formatDate(item.pubDate),
-        duration: getRssTextField(item["itunes:duration"]),
+        duration: formatDuration(getRssTextField(item["itunes:duration"])),
         image: getEpisodeImage(item, channelImage),
         audio: getEpisodeAudio(item),
         link: getRssTextField(item.link),
