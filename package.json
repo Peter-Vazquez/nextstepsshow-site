@@ -1,10 +1,14 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Untitled Document</title>
-</head>
-
-<body>
-</body>
-</html>
+{
+  "name": "nextstepsshow-site",
+  "version": "1.0.0",
+  "description": "Static website for The Next Steps Show powered by Podbean RSS and GitHub Pages.",
+  "main": "src/build.js",
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {},
+  "private": true
+}
