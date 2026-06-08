@@ -64,7 +64,8 @@ a {
 
 .site-logo-img {
   display: block;
-  max-width: 220px;
+  width: 220px;
+  max-width: 100%;
   height: auto;
 }
 
