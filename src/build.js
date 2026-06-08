@@ -7,6 +7,8 @@ const publicDir = path.join(rootDir, "public");
 const episodesDir = path.join(publicDir, "episodes");
 const siteConfigPath = path.join(__dirname, "data", "site.json");
 
+const EPISODES_PER_PAGE = 24;
+
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
 
 function ensureDir(dirPath) {
@@ -292,11 +294,66 @@ function episodeCard(episode, prefix = "../") {
           </article>`;
 }
 
-function generateEpisodesIndex(episodes) {
-  const latestEpisodes = episodes.map((episode) => episodeCard(episode, "../")).join("\n");
+function getEpisodeArchiveUrl(pageNumber, siteRootPrefix) {
+  if (pageNumber <= 1) {
+    return `${siteRootPrefix}episodes/`;
+  }
+
+  return `${siteRootPrefix}episodes/page/${pageNumber}/`;
+}
+
+function generatePagination(currentPage, totalPages, siteRootPrefix) {
+  if (totalPages <= 1) {
+    return "";
+  }
+
+  let pageLinks = "";
+
+  if (currentPage > 1) {
+    pageLinks += `<a href="${getEpisodeArchiveUrl(currentPage - 1, siteRootPrefix)}">Previous</a>`;
+  }
+
+  for (let page = 1; page <= totalPages; page++) {
+    if (page === currentPage) {
+      pageLinks += `<span class="current-page">${page}</span>`;
+    } else {
+      pageLinks += `<a href="${getEpisodeArchiveUrl(page, siteRootPrefix)}">${page}</a>`;
+    }
+  }
+
+  if (currentPage < totalPages) {
+    pageLinks += `<a href="${getEpisodeArchiveUrl(currentPage + 1, siteRootPrefix)}">Next</a>`;
+  }
+
+  return `
+        <nav class="pagination" aria-label="Episode archive pagination">
+          ${pageLinks}
+        </nav>`;
+}
+
+function generateEpisodesIndex({
+  episodes,
+  currentPage = 1,
+  totalPages = 1,
+  siteRootPrefix = "../",
+  cssPath = "../css/styles.css",
+  jsPath = "../js/main.js"
+}) {
+  const startIndex = (currentPage - 1) * EPISODES_PER_PAGE;
+  const pageEpisodes = episodes.slice(startIndex, startIndex + EPISODES_PER_PAGE);
+
+  const latestEpisodes = pageEpisodes
+    .map((episode) => episodeCard(episode, siteRootPrefix))
+    .join("\n");
+
+  const pagination = generatePagination(currentPage, totalPages, siteRootPrefix);
+
+  const pageTitle = currentPage === 1
+    ? `Pods | ${site.siteName}`
+    : `Pods Page ${currentPage} | ${site.siteName}`;
 
   const body = `
-${pageHeader("../")}
+${pageHeader(siteRootPrefix)}
 
   <main>
 
@@ -315,7 +372,7 @@ ${pageHeader("../")}
 
         <h2>Podcast Episodes</h2>
 
-         <p>
+        <p>
           Explore recent conversations from The Next Steps Show, featuring thoughtful interviews, timely commentary, and practical insight on the issues shaping families, communities, businesses, and civic life.
         </p>
 
@@ -333,7 +390,7 @@ ${pageHeader("../")}
           <p class="eyebrow">Recent Conversations</p>
           <h2>Latest Episodes</h2>
           <p>
-            Browse the latest episodes from the podcast archive.
+            Page ${currentPage} of ${totalPages}
           </p>
         </div>
 
@@ -341,79 +398,21 @@ ${pageHeader("../")}
 ${latestEpisodes}
         </div>
 
+${pagination}
+
       </div>
     </section>
 
   </main>
 
-${pageFooter("../")}
+${pageFooter(siteRootPrefix)}
 `;
 
   return baseHtml({
-    title: `Pods | ${site.siteName}`,
+    title: pageTitle,
     description: `Listen to podcast episodes of ${site.siteName} with ${site.hostName}.`,
-    cssPath: "../css/styles.css",
-    jsPath: "../js/main.js",
-    body
-  });
-}
-
-function generateEpisodePage(episode) {
-  const audioHtml = episode.audio
-    ? `
-          <audio controls preload="metadata" class="audio-player">
-            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>`
-    : "";
-
-  const imageHtml = episode.image
-    ? `<img class="episode-detail-artwork" src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
-    : `<div class="episode-image placeholder-image">Episode Artwork</div>`;
-
-  const body = `
-${pageHeader("../../")}
-
-  <main>
-
-    <section class="episode-detail">
-      <div class="container episode-detail-grid">
-
-        <div>
-          ${imageHtml}
-        </div>
-
-        <div>
-          <p class="episode-date">${escapeHtml(episode.dateDisplay)}</p>
-
-          <h1>${escapeHtml(episode.title)}</h1>
-
-          ${episode.duration ? `<p class="episode-duration">Duration: ${escapeHtml(episode.duration)}</p>` : ""}
-
-          ${audioHtml}
-
-          <div class="episode-description">
-            <p>
-              ${escapeHtml(episode.descriptionText)}
-            </p>
-          </div>
-
-          <a class="button primary" href="../">Back to All Episodes</a>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-${pageFooter("../../")}
-`;
-
-  return baseHtml({
-    title: `${episode.title} | ${site.siteName}`,
-    description: episode.excerpt,
-    cssPath: "../../css/styles.css",
-    jsPath: "../../js/main.js",
+    cssPath,
+    jsPath,
     body
   });
 }
@@ -559,6 +558,65 @@ ${pageFooter("./")}
     body
   });
 }
+function generateEpisodePage(episode) {
+  const audioHtml = episode.audio
+    ? `
+          <audio controls preload="metadata" class="audio-player">
+            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>`
+    : "";
+
+  const imageHtml = episode.image
+    ? `<img class="episode-detail-artwork" src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
+    : `<div class="episode-image placeholder-image">Episode Artwork</div>`;
+
+  const body = `
+${pageHeader("../../")}
+
+  <main>
+
+    <section class="episode-detail">
+      <div class="container episode-detail-grid">
+
+        <div>
+          ${imageHtml}
+        </div>
+
+        <div>
+          <p class="episode-date">${escapeHtml(episode.dateDisplay)}</p>
+
+          <h1>${escapeHtml(episode.title)}</h1>
+
+          ${episode.duration ? `<p class="episode-duration">Duration: ${escapeHtml(episode.duration)}</p>` : ""}
+
+          ${audioHtml}
+
+          <div class="episode-description">
+            <p>
+              ${escapeHtml(episode.descriptionText)}
+            </p>
+          </div>
+
+          <a class="button primary" href="../">Back to All Episodes</a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+${pageFooter("../../")}
+`;
+
+  return baseHtml({
+    title: `${episode.title} | ${site.siteName}`,
+    description: episode.excerpt,
+    cssPath: "../../css/styles.css",
+    jsPath: "../../js/main.js",
+    body
+  });
+}
 function parseEpisodesFromRss(rssText) {
   const parser = new XMLParser({
     ignoreAttributes: false,
@@ -649,8 +707,34 @@ async function build() {
 
   cleanGeneratedEpisodePages(episodesDir);
 
-  const episodesIndexHtml = generateEpisodesIndex(episodes);
-  fs.writeFileSync(path.join(episodesDir, "index.html"), episodesIndexHtml, "utf8");
+  const totalPages = Math.ceil(episodes.length / EPISODES_PER_PAGE);
+
+const episodesIndexHtml = generateEpisodesIndex({
+  episodes,
+  currentPage: 1,
+  totalPages,
+  siteRootPrefix: "../",
+  cssPath: "../css/styles.css",
+  jsPath: "../js/main.js"
+});
+
+fs.writeFileSync(path.join(episodesDir, "index.html"), episodesIndexHtml, "utf8");
+
+for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
+  const pageDir = path.join(episodesDir, "page", String(pageNumber));
+  ensureDir(pageDir);
+
+  const pageHtml = generateEpisodesIndex({
+    episodes,
+    currentPage: pageNumber,
+    totalPages,
+    siteRootPrefix: "../../../",
+    cssPath: "../../../css/styles.css",
+    jsPath: "../../../js/main.js"
+  });
+
+  fs.writeFileSync(path.join(pageDir, "index.html"), pageHtml, "utf8");
+}
 
   const homePageHtml = generateHomePage(episodes);
   fs.writeFileSync(path.join(publicDir, "index.html"), homePageHtml, "utf8");
