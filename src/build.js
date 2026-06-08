@@ -186,7 +186,7 @@ function pageHeader(activePathPrefix = "../") {
     <div class="container header-inner">
 
       <a href="${activePathPrefix}" class="site-logo">
-        <img src="${activePathPrefix}images/logo.png" alt="${escapeHtml(site.siteName)} logo" class="site-logo-img">
+        <img src="${activePathPrefix}images/site-logo.png?v=2" alt="${escapeHtml(site.siteName)} logo" class="site-logo-img">
       </a>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">
