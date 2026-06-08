@@ -424,18 +424,18 @@ function generateHomePage(episodes) {
     .join("\n");
 
   const platformLinks = [
-    ["Apple Podcasts", site.platforms?.apple],
-    ["Spotify", site.platforms?.spotify],
-    ["iHeartRadio", site.platforms?.iheartradio],
-    ["Amazon Music", site.platforms?.amazon],
-    ["Podbean", site.platforms?.podbean],
-    ["RSS Feed", site.platforms?.rss]
-  ]
-    .map(([label, url]) => {
-      const safeUrl = url || "#";
-      return `<a href="${escapeHtml(safeUrl)}">${escapeHtml(label)}</a>`;
-    })
-    .join("\n          ");
+  ["Apple Podcasts", site.platforms?.apple],
+  ["Spotify", site.platforms?.spotify],
+  ["iHeartRadio", site.platforms?.iheartradio],
+  ["Amazon Music", site.platforms?.amazon],
+  ["Podbean", site.platforms?.podbean],
+  ["RSS Feed", site.platforms?.rss]
+]
+  .filter(([, url]) => url && url !== "#")
+  .map(([label, url]) => {
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+  })
+  .join("\n          ");
 
   const body = `
 ${pageHeader("./")}
