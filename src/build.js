@@ -201,6 +201,7 @@ function pageHeader(activePathPrefix = "../") {
         <a href="${activePathPrefix}blog/">Blog</a>
         <a href="${activePathPrefix}guest/">Guest</a>
         <a href="${activePathPrefix}nsrpn-online-radio/">NSRPN Online Radio</a>
+        <a href="${escapeHtml(site.wyslLiveStream)}" target="_blank" rel="noopener">WYSL Live Stream</a>
         <a href="${activePathPrefix}contact/">Contact</a>
         <a href="${activePathPrefix}advertise/">Sponsor Us</a>
       </nav>
@@ -228,6 +229,7 @@ function pageFooter(activePathPrefix = "../") {
           <a href="${activePathPrefix}videos/">Vids</a>
           <a href="${activePathPrefix}mission/">Mission</a>
           <a href="${activePathPrefix}guest/">Guest</a>
+          <a href="${escapeHtml(site.wyslLiveStream)}" target="_blank" rel="noopener">WYSL Live Stream</a>
           <a href="${activePathPrefix}reviews/">Reviews</a>
           <a href="${activePathPrefix}sponsors/">Sponsors</a>
         </nav>
