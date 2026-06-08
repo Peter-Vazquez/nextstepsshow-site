@@ -58,8 +58,14 @@ a {
   color: var(--light);
   text-decoration: none;
   display: inline-flex;
-  flex-direction: column;
-  line-height: 1.1;
+  align-items: center;
+  line-height: 1;
+}
+
+.site-logo-img {
+  display: block;
+  max-width: 220px;
+  height: auto;
 }
 
 .logo-main {
