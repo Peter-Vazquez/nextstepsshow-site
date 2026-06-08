@@ -9,11 +9,11 @@
   "phoneSponsor": "(585) 346-3000",
   "copyrightYear": "2026",
   "platforms": {
-    "apple": "#",
-    "spotify": "#",
-    "iheartradio": "#",
-    "amazon": "#",
-    "podbean": "#",
-    "rss": "#"
+    "apple": "https://podcasts.apple.com/us/podcast/next-steps-show/id1639150976",
+    "spotify": "https://open.spotify.com/show/22jw0C0m9di8zm4ogdXtST",
+    "iheartradio": "https://www.iheart.com/podcast/338-next-steps-show-101983561/",
+    "amazon": "https://music.amazon.com/podcasts/048c530e-4f0c-4946-b197-4701f18ae240/next-steps-show?referrer=https%3A%2F%2Fwww.nextstepsshow.com%2F",
+    "podbean": "https://nextstepsshow.podbean.com/",
+    "rss": "https://feed.podbean.com/nextstepsshow/feed.xml"
   }
 }
