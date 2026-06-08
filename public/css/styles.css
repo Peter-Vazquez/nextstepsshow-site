@@ -50,8 +50,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 18px 0;
+  gap: 32px;
+  padding: 14px 0;
+  min-height: 92px;
 }
 
 .site-logo {
@@ -59,14 +60,17 @@ a {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .site-logo-img {
   display: block;
-  width: 220px;
-  max-width: 100%;
-  height: auto;
+  height: 76px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
 }
 
 .logo-main {
@@ -350,10 +354,17 @@ a {
 }
 
 @media (max-width: 900px) {
-  .header-inner {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+.header-inner {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.site-logo-img {
+  height: 68px;
+  max-width: 160px;
+}
 
   .menu-toggle {
     display: inline-block;
@@ -521,4 +532,87 @@ a {
 .pagination .current-page {
   color: var(--light);
   background: var(--accent);
+}
+/* Header logo and navigation refinement */
+
+.site-header {
+  background: var(--dark);
+  color: var(--light);
+  border-bottom: 4px solid var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 12px 0;
+  min-height: 88px;
+}
+
+.site-logo {
+  color: var(--light);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.site-logo-img {
+  display: block;
+  height: 72px;
+  width: auto;
+  max-width: 190px;
+  object-fit: contain;
+}
+
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.main-nav a {
+  color: var(--light);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: .95rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px 0;
+    min-height: auto;
+  }
+
+  .site-logo-img {
+    height: 64px;
+    max-width: 160px;
+  }
+
+  .menu-toggle {
+    display: inline-block;
+  }
+
+  .main-nav {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .main-nav.is-open {
+    display: flex;
+  }
 }
