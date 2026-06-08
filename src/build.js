@@ -211,41 +211,64 @@ function pageHeader(activePathPrefix = "../") {
 }
 
 function pageFooter(activePathPrefix = "../") {
+  const copyrightYear = site.copyrightYear || new Date().getFullYear();
+
   return `
   <footer class="site-footer">
     <div class="container footer-grid">
 
-      <div>
-        <h2>${escapeHtml(site.siteName)}</h2>
+      <div class="footer-brand">
+        <img src="${activePathPrefix}images/site-logo.png?v=2" alt="${escapeHtml(site.siteName)} logo" class="footer-logo">
         <p>
-          Faith, politics, entrepreneurship, leadership, and cultural commentary for people ready to move forward with purpose.
+          ${escapeHtml(site.description)}
         </p>
       </div>
 
       <div>
-        <h3>Explore</h3>
-        <nav class="footer-nav">
+        <h3 class="footer-heading">Explore</h3>
+        <div class="footer-links">
+          <a href="${activePathPrefix}">Home</a>
+          <a href="${activePathPrefix}mission/">Mission</a>
           <a href="${activePathPrefix}episodes/">Pods</a>
           <a href="${activePathPrefix}videos/">Vids</a>
-          <a href="${activePathPrefix}mission/">Mission</a>
+          <a href="${activePathPrefix}blog/">Blog</a>
           <a href="${activePathPrefix}guest/">Guest</a>
-          <a href="${escapeHtml(site.wyslLiveStream)}" target="_blank" rel="noopener">WYSL Live Stream</a>
-          <a href="${activePathPrefix}reviews/">Reviews</a>
-          <a href="${activePathPrefix}sponsors/">Sponsors</a>
-        </nav>
+          <a href="${activePathPrefix}contact/">Contact</a>
+          <a href="${activePathPrefix}advertise/">Sponsor Us</a>
+        </div>
       </div>
 
       <div>
-        <h3>Contact</h3>
-        <p>Sponsor the show:</p>
-        <p>${escapeHtml(site.phoneSponsor)}</p>
-        <p>${escapeHtml(site.phonePrimary)}</p>
+        <h3 class="footer-heading">Listen Live</h3>
+        <p>${escapeHtml(site.liveSchedule || "Listen live, Monday through Friday at noon.")}</p>
+        <p class="footer-stations">
+          ${escapeHtml(site.stationLine || "WYSL 92.1 FM | 95.5 FM | 1040 AM")}
+        </p>
+        <a href="${escapeHtml(site.wyslLiveStream)}" target="_blank" rel="noopener" class="footer-button">
+          WYSL Live Stream
+        </a>
+      </div>
+
+      <div>
+        <h3 class="footer-heading">Join the Conversation</h3>
+        <p>
+          Call in:<br>
+          <a href="tel:15853463000">${escapeHtml(site.callInLocal || "(585) 346-3000")}</a>
+        </p>
+        <p>
+          Toll-free:<br>
+          <a href="tel:18665521009">${escapeHtml(site.callInTollFree || "(866) 552-1009")}</a>
+        </p>
+        <p>
+          Text Peter:<br>
+          <a href="sms:15858807580">${escapeHtml(site.textLine || "(585) 880-7580")}</a>
+        </p>
       </div>
 
     </div>
 
     <div class="container footer-bottom">
-      <p>&copy; ${escapeHtml(site.copyrightYear)} ${escapeHtml(site.siteName)}. All rights reserved.</p>
+      <p>&copy; ${escapeHtml(String(copyrightYear))} ${escapeHtml(site.siteName)}. All rights reserved.</p>
     </div>
   </footer>`;
 }
