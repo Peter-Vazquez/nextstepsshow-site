@@ -616,3 +616,65 @@ a {
     display: flex;
   }
 }
+
+/* Live radio and call-in section */
+
+.live-section {
+  background: var(--dark-soft);
+  color: var(--light);
+  padding: 72px 0;
+}
+
+.live-grid {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.live-section h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  margin: 0 0 18px;
+}
+
+.station-line {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.live-card {
+  background: var(--light);
+  color: var(--text);
+  border-top: 5px solid var(--accent);
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+
+.live-card h3 {
+  margin-top: 0;
+  color: var(--accent);
+}
+
+.live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.live-card .button.secondary {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.live-card .button.secondary:hover {
+  background: var(--accent);
+  color: var(--light);
+}
+
+@media (max-width: 900px) {
+  .live-grid {
+    grid-template-columns: 1fr;
+  }
+}
