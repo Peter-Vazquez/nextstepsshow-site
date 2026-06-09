@@ -491,7 +491,13 @@ ${pageHeader("./")}
           <h2>Conversations That Move People Forward</h2>
 
           <p>
-            ${escapeHtml(site.siteName)} with ${escapeHtml(site.hostName)} brings together voices from politics, faith, business, culture, and community leadership. Each episode focuses on the issues shaping families, neighborhoods, churches, schools, businesses, and the future of our country.
+            ${escapeHtml(site.siteName)} with ${escapeHtml(site.hostName)} brings together voices from politics, faith,
+  			business, culture, and community leadership for conversations that reach beyond the
+  			headlines and into the places where life is actually lived: around kitchen tables,
+  			in church pews, inside classrooms, across shop floors, and throughout the neighborhoods
+   			we call home. Each episode looks at the issues shaping families, communities, churches,
+  			schools, businesses, and the future of our country, with a steady focus on truth,
+  			responsibility, and what comes next.
           </p>
 
           <p>
@@ -502,18 +508,14 @@ ${pageHeader("./")}
         <aside class="broadcast-card">
           <h3>Listen on Radio</h3>
 
-          <p>
-            Catch ${escapeHtml(site.siteName)} through WYSL and affiliated stations.
-          </p>
+<p>
+  Catch The Next Steps Show through WYSL | WLEA Voice of Liberty Network.
+</p>
 
-          <ul>
-            <li>92.1 FM</li>
-            <li>95.5 FM</li>
-            <li>1040 AM</li>
-            <li>WLEA 1480 AM</li>
-            <li>106.9 FM</li>
-            <li>WCKR 92.1 FM</li>
-          </ul>
+<ul>
+  <li>WYSL 92.1 FM, 95.5 FM, 1040 AM</li>
+  <li>WLEA 1480 AM, 106.9 FM, 92.1 FM</li>
+</ul>
         </aside>
 
       </div>
