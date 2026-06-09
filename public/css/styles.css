@@ -905,3 +905,57 @@ text-align: center;
 grid-template-columns: 1fr;
 }
 }
+
+/* Homepage order and card sizing */
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+main > .hero {
+  order: 1;
+}
+
+main > .live-section {
+  order: 2;
+}
+
+main > .intro-section {
+  order: 3;
+}
+
+main > .featured-section {
+  order: 4;
+}
+
+main > .listen-section {
+  order: 5;
+}
+
+.live-grid,
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 36px;
+  align-items: stretch;
+}
+
+.live-card,
+.sponsor-box {
+  width: 100%;
+  min-height: 280px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .live-grid,
+  .intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .live-card,
+  .sponsor-box {
+    min-height: auto;
+  }
+}
