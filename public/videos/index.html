@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Vids | The Next Steps Show</title>
 
   <meta name="description" content="Watch videos, interviews, and commentary from The Next Steps Show with Peter Vazquez.">
@@ -43,121 +43,185 @@
 
   <main>
 
-    <section class="page-hero">
-      <div class="container">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Vids</p>
+      <h1>Watch The Next Steps Show live and on demand.</h1>
+      <p>
+        Watch live broadcasts, interviews, commentary, and featured video conversations from
+        The Next Steps Show. When the show is live, viewers can follow the broadcast through
+        YouTube and connected social platforms.
+      </p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container content-grid">
+
+  <div class="content-main">
+    <h2>Watch Live</h2>
+
+    <p>
+      The Next Steps Show broadcasts video through Restream to connected platforms, including
+      YouTube. This page is prepared to feature the live YouTube player so visitors can watch
+      directly from the website without paying for the Restream website player.
+    </p>
+
+    <div class="video-player-card">
+
+      <!--
+        After you get the YouTube Channel ID, replace CHANNEL_ID_HERE below.
+        The Channel ID starts with UC.
+      -->
+
+      <iframe
+  width="100%"
+  height="360"
+  src="https://www.youtube.com/embed/live_stream?channel=UCaKa0O9AfX-miwkcnDHXtNQ"
+  title="The Next Steps Show Live Video"
+  frameborder="0"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen>
+</iframe>
+
+    </div>
+
+    <p class="small-note">
+      If the live player does not show a broadcast, the show may not currently be live, or the
+      YouTube Channel ID still needs to be added.
+    </p>
+  </div>
+
+  <aside class="content-card">
+    <h3>Watch on YouTube</h3>
+
+    <p>
+      <strong>Channel:</strong><br>
+      The Next Steps Show
+    </p>
+
+    <p>
+      <strong>YouTube:</strong><br>
+      <a href="https://www.youtube.com/@NextStepsShow" target="_blank" rel="noopener">
+        Visit @NextStepsShow
+      </a>
+    </p>
+
+    <p>
+      <strong>Live and recent videos:</strong><br>
+      <a href="https://www.youtube.com/@NextStepsShow/streams" target="_blank" rel="noopener">
+        View YouTube streams
+      </a>
+    </p>
+  </aside>
+
+</div>
+
+  </section>
+
+  <section class="content-section alt-section">
+    <div class="container">
+      <div class="section-heading">
         <p class="eyebrow">Video Archive</p>
-        <h1>Vids</h1>
+        <h2>Watch recent broadcasts and featured segments.</h2>
         <p>
-          Watch interviews, show clips, featured conversations, and video commentary from The Next Steps Show.
+          The video archive connects viewers to recent live broadcasts, interviews, commentary, clips,
+          and special segments from The Next Steps Show.
         </p>
       </div>
-    </section>
 
-    <section class="content-section">
-      <div class="container content-narrow">
+  <div class="video-archive-actions">
+    <a href="https://www.youtube.com/@NextStepsShow/videos" class="button primary" target="_blank" rel="noopener">
+      Watch Recent Videos
+    </a>
+    <a href="https://www.youtube.com/@NextStepsShow/streams" class="button secondary" target="_blank" rel="noopener">
+      Watch Recent Streams
+    </a>
+    <a href="https://www.youtube.com/@NextStepsShow" class="button secondary" target="_blank" rel="noopener">
+      Visit YouTube Channel
+    </a>
+  </div>
 
-        <h2>Featured Videos</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>Live Broadcasts</h3>
+      <p>
+        Watch recent streamed broadcasts and follow new live video content from The Next Steps Show.
+      </p>
+    </div>
 
+    <div class="feature-card">
+      <h3>Interviews</h3>
+      <p>
+        View conversations with guests who bring insight, experience, and perspective to important issues.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <h3>Clips and Commentary</h3>
+      <p>
+        Follow featured moments, commentary, and special segments from the show.
+      </p>
+    </div>
+  </div>
+</div>
+
+  </section>
+
+  <section class="content-section">
+    <div class="container content-grid">
+
+  <div class="content-main">
+    <h2>More Ways to Follow the Show</h2>
+
+    <p>
+      Video is one way to follow The Next Steps Show. Listeners and viewers can also stay connected
+      through the podcast archive, NSRPN Online Radio, guest conversations, and listener participation.
+    </p>
+
+    <p>
+      Visit the latest episodes page to hear recent conversations, or use the contact page to suggest
+      a topic, share a story, or reach out about appearing on the show.
+    </p>
+  </div>
+
+  <aside class="content-card">
+    <h3>Stay Connected</h3>
+    <ul>
+      <li><a href="../episodes/">Browse podcast episodes</a></li>
+      <li><a href="../nsrpn-online-radio/">Listen to NSRPN Online Radio</a></li>
+      <li><a href="../guest/">Be a guest</a></li>
+      <li><a href="../contact/">Contact the show</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+  </section>
+
+  <section class="cta-section">
+    <div class="container cta-inner">
+      <div>
+        <p class="eyebrow">Watch and Listen</p>
+        <h2>Follow The Next Steps Show live and on demand.</h2>
         <p>
-          This page will house video interviews, special segments, show highlights, public commentary, and featured media from The Next Steps Show.
+          Watch live video, browse recent episodes, or connect with the show to suggest future topics
+          and guests.
         </p>
-
-        <p>
-          The video section can later be connected to YouTube manually through a simple data file or automatically through an API. For now, we are establishing the layout so the site has a clean structure instead of the usual “we will fix it later” disaster parade.
-        </p>
-
-        <div class="simple-card-grid">
-
-          <article class="simple-card">
-            <h3>Recent Interviews</h3>
-            <p>
-              Long-form conversations with guests on faith, politics, culture, business, family, and civic life.
-            </p>
-          </article>
-
-          <article class="simple-card">
-            <h3>Show Clips</h3>
-            <p>
-              Short clips and highlights from recent broadcasts and podcast episodes.
-            </p>
-          </article>
-
-          <article class="simple-card">
-            <h3>Special Features</h3>
-            <p>
-              Video features, public commentary, local issues, and community-centered conversations.
-            </p>
-          </article>
-
-        </div>
-
       </div>
-    </section>
 
-    <section class="featured-section">
-      <div class="container">
+  <div class="cta-actions">
+    <a href="https://www.youtube.com/@NextStepsShow" class="button primary" target="_blank" rel="noopener">Visit YouTube</a>
+    <a href="../episodes/" class="button secondary">Latest Episodes</a>
+    <a href="../guest/" class="button secondary">Be a Guest</a>
+  </div>
+</div>
 
-        <div class="section-heading">
-          <p class="eyebrow">Coming Next</p>
-          <h2>Video Library</h2>
-          <p>
-            Video cards can later include thumbnails, dates, descriptions, and links to YouTube, Rumble, or another video platform.
-          </p>
-        </div>
+  </section>
 
-        <div class="episode-grid">
+</main>
 
-          <article class="episode-card">
-            <div class="episode-image placeholder-image">
-              Video Thumbnail
-            </div>
-
-            <div class="episode-content">
-              <p class="episode-date">Coming Soon</p>
-              <h3>Featured Interview</h3>
-              <p>
-                A featured video interview will appear here with a thumbnail and watch link.
-              </p>
-              <a href="#">Watch the Video</a>
-            </div>
-          </article>
-
-          <article class="episode-card">
-            <div class="episode-image placeholder-image">
-              Video Thumbnail
-            </div>
-
-            <div class="episode-content">
-              <p class="episode-date">Coming Soon</p>
-              <h3>Show Highlight</h3>
-              <p>
-                Short clips and highlights can be displayed here for quick viewer access.
-              </p>
-              <a href="#">Watch the Video</a>
-            </div>
-          </article>
-
-          <article class="episode-card">
-            <div class="episode-image placeholder-image">
-              Video Thumbnail
-            </div>
-
-            <div class="episode-content">
-              <p class="episode-date">Coming Soon</p>
-              <h3>Special Segment</h3>
-              <p>
-                Special features and longer video segments can be organized in this archive.
-              </p>
-              <a href="#">Watch the Video</a>
-            </div>
-          </article>
-
-        </div>
-
-      </div>
-    </section>
-
-  </main>
 
   <footer class="site-footer">
   <div class="container footer-grid">

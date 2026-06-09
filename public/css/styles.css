@@ -788,3 +788,35 @@ a {
   color: var(--muted);
   margin-top: 18px;
 }
+
+/* Live video and archive */
+
+.video-player-card {
+  background: var(--dark);
+  border-top: 5px solid var(--accent);
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+
+.video-player-card iframe,
+.video-player-card video {
+  display: block;
+  width: 100%;
+  min-height: 360px;
+  border: 0;
+}
+
+.video-archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 28px 0 34px;
+}
+
+@media (max-width: 900px) {
+  .video-player-card iframe,
+  .video-player-card video {
+    min-height: 240px;
+  }
+}
