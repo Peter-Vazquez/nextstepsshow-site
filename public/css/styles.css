@@ -766,3 +766,25 @@ a {
     width: 140px;
   }
 }
+
+/* Online radio player */
+
+.radio-player-card {
+  background: var(--dark);
+  border-top: 5px solid var(--accent);
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+
+.radio-player-card iframe {
+  display: block;
+  width: 100%;
+  min-height: 330px;
+  border: 0;
+}
+
+.small-note {
+  font-size: .95rem;
+  color: var(--muted);
+  margin-top: 18px;
+}
