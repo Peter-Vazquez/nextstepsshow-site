@@ -906,32 +906,7 @@ grid-template-columns: 1fr;
 }
 }
 
-/* Homepage order and card sizing */
-
-main {
-  display: flex;
-  flex-direction: column;
-}
-
-main > .hero {
-  order: 1;
-}
-
-main > .live-section {
-  order: 2;
-}
-
-main > .intro-section {
-  order: 3;
-}
-
-main > .featured-section {
-  order: 4;
-}
-
-main > .listen-section {
-  order: 5;
-}
+/* Homepage card sizing only */
 
 .live-grid,
 .intro-grid {
@@ -942,7 +917,7 @@ main > .listen-section {
 }
 
 .live-card,
-.sponsor-box {
+.broadcast-card {
   width: 100%;
   min-height: 280px;
   box-sizing: border-box;
@@ -955,7 +930,7 @@ main > .listen-section {
   }
 
   .live-card,
-  .sponsor-box {
+  .broadcast-card {
     min-height: auto;
   }
 }

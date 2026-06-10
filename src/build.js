@@ -483,7 +483,49 @@ ${pageHeader("./")}
 
       </div>
     </section>
+<section class="live-section">
+  <div class="container live-grid">
 
+    <div>
+      <p class="eyebrow">Listen Live</p>
+      <h2>Join the Conversation</h2>
+
+      <p>
+        Call in, challenge, and participate. Share your story, questions, and perspective live on The Next Steps Show.
+      </p>
+
+      <p>
+        ${escapeHtml(site.liveSchedule)}
+      </p>
+
+      <p class="station-line">
+        ${escapeHtml(site.stationLine)}
+      </p>
+    </div>
+
+    <div class="live-card">
+      <h3>Call or Text the Show</h3>
+
+      <p>
+        Call in: <strong>${escapeHtml(site.callInLocal)}</strong>
+      </p>
+
+      <p>
+        Toll-free: <strong>${escapeHtml(site.callInTollFree)}</strong>
+      </p>
+
+      <p>
+        Text Peter: <strong>${escapeHtml(site.textLine)}</strong>
+      </p>
+
+      <div class="live-actions">
+        <a href="${escapeHtml(site.wyslLiveStream)}" class="button primary" target="_blank" rel="noopener">Listen Live</a>
+        <a href="tel:15853463000" class="button secondary">Call the Show</a>
+      </div>
+    </div>
+
+  </div>
+</section>
     <section class="intro-section">
       <div class="container intro-grid">
 
@@ -530,49 +572,7 @@ ${pageHeader("./")}
 
       </div>
     </section>
-    <section class="live-section">
-      <div class="container live-grid">
-
-        <div>
-          <p class="eyebrow">Listen Live</p>
-          <h2>Join the Conversation</h2>
-
-          <p>
-            Call in, challenge, and participate. Share your story, questions, and perspective live on The Next Steps Show.
-          </p>
-
-          <p>
-            ${escapeHtml(site.liveSchedule)}
-          </p>
-
-          <p class="station-line">
-            ${escapeHtml(site.stationLine)}
-          </p>
-        </div>
-
-        <div class="live-card">
-          <h3>Call or Text the Show</h3>
-
-          <p>
-            Call in: <strong>${escapeHtml(site.callInLocal)}</strong>
-          </p>
-
-          <p>
-            Toll-free: <strong>${escapeHtml(site.callInTollFree)}</strong>
-          </p>
-
-          <p>
-            Text Peter: <strong>${escapeHtml(site.textLine)}</strong>
-          </p>
-
-          <div class="live-actions">
-            <a href="${escapeHtml(site.wyslLiveStream)}" class="button primary" target="_blank" rel="noopener">Listen Live</a>
-            <a href="tel:15853463000" class="button secondary">Call the Show</a>
-          </div>
-        </div>
-
-      </div>
-    </section>
+   
     <section class="featured-section">
       <div class="container">
 
