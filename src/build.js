@@ -233,6 +233,7 @@ function pageFooter(activePathPrefix = "../") {
           <a href="${activePathPrefix}videos/">Vids</a>
           <a href="${activePathPrefix}blog/">Blog</a>
           <a href="${activePathPrefix}guest/">Guest</a>
+		  <a href="${activePathPrefix}nsrpn-online-radio/">NSRPN Online Radio</a>
           <a href="${activePathPrefix}contact/">Contact</a>
           <a href="${activePathPrefix}advertise/">Sponsor Us</a>
         </div>
