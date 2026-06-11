@@ -7,7 +7,7 @@ const publicDir = path.join(rootDir, "public");
 const episodesDir = path.join(publicDir, "episodes");
 const siteConfigPath = path.join(__dirname, "data", "site.json");
 
-const EPISODES_PER_PAGE = 24;
+const EPISODES_PER_PAGE = 12;
 
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
 
@@ -385,25 +385,30 @@ ${pageHeader(siteRootPrefix)}
     <section class="page-hero">
       <div class="container">
         <p class="eyebrow">Podcast Archive</p>
-        <h1>Pods</h1>
-        <p>
-          Listen to recent episodes of ${escapeHtml(site.siteName)} featuring conversations on faith, politics, entrepreneurship, leadership, family, culture, and civic responsibility.
-        </p>
+<h1>Latest Episodes</h1>
+<p>
+  Explore conversations from The Next Steps Show with Peter Vazquez, featuring guests,
+  commentary, and timely discussions on faith, politics, leadership, business, family,
+  culture, community, and the issues shaping everyday life.
+</p>
       </div>
     </section>
 
     <section class="content-section">
       <div class="container content-narrow">
 
-        <h2>Podcast Episodes</h2>
+        <h2>Browse the Archive</h2>
 
         <p>
-          Explore recent conversations from The Next Steps Show, featuring thoughtful interviews, timely commentary, and practical insight on the issues shaping families, communities, businesses, and civic life.
-        </p>
+  Start with the latest conversations, then move through the archive to revisit interviews,
+  commentary, and stories that challenge, inform, and encourage listeners to take the next
+  right step.
+</p>
 
-        <p>
-          Browse the archive below to catch up on past episodes, revisit important conversations, and share programs with others.
-        </p>
+<p>
+  Each episode is part of a larger conversation about faith, leadership, responsibility,
+  community, and the future we are building together.
+</p>
 
       </div>
     </section>
