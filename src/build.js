@@ -51,6 +51,27 @@ function truncateText(value, limit = 220) {
   return text.slice(0, limit).trim() + "...";
 }
 
+function createCleanExcerpt(value, limit = 180) {
+  const text = stripHtml(value);
+
+  if (text.length <= limit) {
+    return text;
+  }
+
+  const excerpt = text.slice(0, limit).trim();
+  const sentenceEnd = Math.max(
+    excerpt.lastIndexOf(". "),
+    excerpt.lastIndexOf("! "),
+    excerpt.lastIndexOf("? ")
+  );
+
+  if (sentenceEnd >= 80) {
+    return `${excerpt.slice(0, sentenceEnd + 1).trim()}...`;
+  }
+
+  return `${excerpt.replace(/[\s,;:.-]+$/, "")}...`;
+}
+
 function slugify(value) {
   return String(value)
     .toLowerCase()
@@ -299,10 +320,33 @@ ${body}
 `;
 }
 
-function episodeCard(episode, prefix = "../") {
+function episodeCard(episode, prefix = "../", options = {}) {
   const imageHtml = episode.image
     ? `<img class="episode-card-image" src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
     : `<div class="episode-image placeholder-image">Episode Artwork</div>`;
+
+  if (options.variant === "archive") {
+    const metaItems = [episode.dateDisplay, episode.duration].filter(Boolean);
+    const metaHtml = metaItems.length
+      ? `<p class="episode-card-meta">${escapeHtml(metaItems.join(" • "))}</p>`
+      : "";
+
+    return `
+          <article class="episode-card archive-episode-card">
+            <a class="archive-episode-artwork" href="${prefix}episodes/${escapeHtml(episode.slug)}/" aria-label="Listen to ${escapeHtml(episode.title)}">
+              ${imageHtml}
+            </a>
+
+            <div class="episode-content archive-episode-content">
+              ${metaHtml}
+              <h3><a href="${prefix}episodes/${escapeHtml(episode.slug)}/">${escapeHtml(episode.title)}</a></h3>
+              <p class="episode-card-excerpt">
+                ${escapeHtml(createCleanExcerpt(episode.descriptionText || episode.excerpt, 180))}
+              </p>
+              <a class="episode-card-link" href="${prefix}episodes/${escapeHtml(episode.slug)}/">Listen to the Episode</a>
+            </div>
+          </article>`;
+  }
 
   return `
           <article class="episode-card">
@@ -368,7 +412,7 @@ function generateEpisodesIndex({
   const pageEpisodes = episodes.slice(startIndex, startIndex + EPISODES_PER_PAGE);
 
   const latestEpisodes = pageEpisodes
-    .map((episode) => episodeCard(episode, siteRootPrefix))
+    .map((episode) => episodeCard(episode, siteRootPrefix, { variant: "archive" }))
     .join("\n");
 
   const pagination = generatePagination(currentPage, totalPages, siteRootPrefix);
@@ -645,10 +689,19 @@ ${pageFooter("./")}
 function generateEpisodePage(episode) {
   const audioHtml = episode.audio
     ? `
-          <audio controls preload="metadata" class="audio-player">
-            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>`
+              <audio controls preload="metadata" class="audio-player">
+                <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>`
+    : "";
+
+  const listenUrl = episode.audio || episode.link;
+  const listenButton = listenUrl
+    ? `<a class="button primary episode-listen-button" href="${escapeHtml(listenUrl)}"${episode.audio ? "" : " target=\"_blank\" rel=\"noopener\""}>Listen Now</a>`
+    : "";
+
+  const durationHtml = episode.duration
+    ? `<span><strong>Duration</strong> ${escapeHtml(episode.duration)}</span>`
     : "";
 
   const imageHtml = episode.image
@@ -661,30 +714,42 @@ ${pageHeader("../../")}
   <main>
 
     <section class="episode-detail">
-      <div class="container episode-detail-grid">
+      <div class="container">
+        <a class="episode-back-link" href="../">← Back to All Episodes</a>
 
-        <div>
-          ${imageHtml}
-        </div>
+        <div class="episode-detail-grid">
 
-        <div>
-          <p class="episode-date">${escapeHtml(episode.dateDisplay)}</p>
-
-          <h1>${escapeHtml(episode.title)}</h1>
-
-          ${episode.duration ? `<p class="episode-duration">Duration: ${escapeHtml(episode.duration)}</p>` : ""}
-
-          ${audioHtml}
-
-          <div class="episode-description">
-            <p>
-              ${escapeHtml(episode.descriptionText)}
-            </p>
+          <div class="episode-detail-media">
+            ${imageHtml}
           </div>
 
-          <a class="button primary" href="../">Back to All Episodes</a>
-        </div>
+          <article class="episode-detail-copy">
+            <p class="eyebrow">Episode</p>
 
+            <h1>${escapeHtml(episode.title)}</h1>
+
+            <div class="episode-detail-meta">
+              ${episode.dateDisplay ? `<span><strong>Date</strong> ${escapeHtml(episode.dateDisplay)}</span>` : ""}
+              ${durationHtml}
+            </div>
+
+            <div class="episode-actions">
+              ${listenButton}
+            </div>
+
+            ${audioHtml}
+
+            <div class="episode-description">
+              <h2>Episode Details</h2>
+              <p>
+                ${escapeHtml(episode.descriptionText)}
+              </p>
+            </div>
+
+            <a class="episode-back-link bottom" href="../">← Back to All Episodes</a>
+          </article>
+
+        </div>
       </div>
     </section>
 
