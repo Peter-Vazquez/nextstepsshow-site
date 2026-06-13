@@ -1,16 +1,24 @@
 const fs = require("fs");
 const path = require("path");
 const { XMLParser } = require("fast-xml-parser");
-
+const matter = require("gray-matter");
+const MarkdownIt = require("markdown-it");
 const rootDir = path.join(__dirname, "..");
 const publicDir = path.join(rootDir, "public");
 const episodesDir = path.join(publicDir, "episodes");
+const blogSourceDir = path.join(__dirname, "blog", "posts");
+const blogDir = path.join(publicDir, "blog");
 const siteConfigPath = path.join(__dirname, "data", "site.json");
 
 const EPISODES_PER_PAGE = 12;
 
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
 
+const markdown = new MarkdownIt({
+  html: false,
+  linkify: true,
+  typographer: true
+});
 function ensureDir(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
@@ -124,6 +132,73 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 90);
 }
+
+function normalizeArray(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  return String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function resolveSiteAsset(assetPath, activePathPrefix) {
+  if (!assetPath) {
+    return "";
+  }
+
+  const value = String(assetPath).trim();
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  return `${activePathPrefix}${value.replace(/^\/+/, "")}`;
+}
+
+function readBlogPosts() {
+  if (!fs.existsSync(blogSourceDir)) {
+    return [];
+  }
+
+  return fs.readdirSync(blogSourceDir)
+    .filter((fileName) => fileName.endsWith(".md"))
+    .map((fileName) => {
+      const filePath = path.join(blogSourceDir, fileName);
+      const rawFile = fs.readFileSync(filePath, "utf8");
+      const parsed = matter(rawFile);
+      const data = parsed.data || {};
+
+      const title = data.title ? String(data.title).trim() : fileName.replace(/\.md$/, "");
+      const slug = data.slug ? slugify(data.slug) : slugify(title);
+      const date = data.date ? String(data.date) : "";
+      const contentHtml = markdown.render(parsed.content || "");
+      const plainText = stripHtml(contentHtml);
+
+      return {
+        title,
+        slug,
+        date,
+        dateDisplay: formatDate(date),
+        author: data.author ? String(data.author).trim() : site.hostName || "Peter Vazquez",
+        category: data.category ? String(data.category).trim() : "Commentary",
+        tags: normalizeArray(data.tags),
+        excerpt: data.excerpt ? String(data.excerpt).trim() : truncateText(plainText, 220),
+        status: data.status ? String(data.status).trim().toLowerCase() : "published",
+        image: data.image ? String(data.image).trim() : "",
+        contentHtml
+      };
+    })
+    .filter((post) => post.status === "published")
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
 function formatDate(value) {
   if (!value) {
     return "";
@@ -720,9 +795,9 @@ ${latestEpisodeCards}
   </main>
 
 ${pageFooter("./")}
-`;
+`;  
 
-  return baseHtml({
+return baseHtml({
     title: `${site.siteName} | Faith, Politics & Entrepreneurship`,
     description: site.description,
     cssPath: "css/styles.css",
@@ -730,6 +805,148 @@ ${pageFooter("./")}
     body
   });
 }
+
+function blogPostCard(post, activePathPrefix = "../") {
+  const postUrl = `${activePathPrefix}blog/${escapeHtml(post.slug)}/`;
+  const imageHtml = post.image
+    ? `<img src="${escapeHtml(resolveSiteAsset(post.image, activePathPrefix))}" alt="${escapeHtml(post.title)}">`
+    : "";
+
+  return `
+          <article class="blog-card">
+            ${imageHtml ? `<a class="blog-card-image" href="${postUrl}">${imageHtml}</a>` : ""}
+
+            <div class="blog-card-content">
+              <p class="blog-meta">${escapeHtml(post.category)}${post.dateDisplay ? ` • ${escapeHtml(post.dateDisplay)}` : ""}</p>
+
+              <h3>
+                <a href="${postUrl}">${escapeHtml(post.title)}</a>
+              </h3>
+
+              <p>
+                ${escapeHtml(post.excerpt)}
+              </p>
+
+              <a class="blog-read-link" href="${postUrl}">Read More</a>
+            </div>
+          </article>`;
+}
+function generateBlogIndex(posts) {
+  const postCards = posts.length
+    ? posts.map((post) => blogPostCard(post, "../")).join("\n")
+    : `
+          <div class="empty-state">
+            <h2>Blog posts are coming soon.</h2>
+            <p>Written commentary, show notes, and issue analysis will appear here as new posts are published.</p>
+          </div>`;
+
+  const body = `
+${pageHeader("../")}
+
+  <main class="blog-page">
+
+    <section class="blog-hero">
+      <div class="container blog-hero-inner">
+        <p class="eyebrow">The Next Steps Blog</p>
+
+        <h1>Written Commentary, Show Notes, and Issue Analysis</h1>
+
+        <p class="blog-hero-lead">
+          Explore written commentary, show notes, video recaps, guest highlights, and issue analysis from The Next Steps Show.
+        </p>
+      </div>
+    </section>
+
+    <section class="blog-list-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <p class="eyebrow">Latest Posts</p>
+          <h2>Read the Latest</h2>
+        </div>
+
+        <div class="blog-grid">
+${postCards}
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+${pageFooter("../")}
+`;
+
+  return baseHtml({
+    title: `Blog | ${site.siteName}`,
+    description: "Written commentary, show notes, video recaps, guest highlights, and issue analysis from The Next Steps Show.",
+    cssPath: "../css/styles.css",
+    jsPath: "../js/main.js",
+    body
+  });
+}
+
+function generateBlogPostPage(post) {
+  const tagList = post.tags.length
+    ? `
+          <div class="blog-post-tags">
+            ${post.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("\n")}
+          </div>`
+    : "";
+
+  const imageHtml = post.image
+    ? `<img class="blog-post-image" src="${escapeHtml(resolveSiteAsset(post.image, "../../"))}" alt="${escapeHtml(post.title)}">`
+    : "";
+
+  const body = `
+${pageHeader("../../")}
+
+  <main class="blog-post-page">
+
+    <article class="blog-post">
+
+      <header class="blog-post-header">
+        <div class="container">
+          <a class="blog-back-link" href="../">← Back to Blog</a>
+
+          <p class="eyebrow">${escapeHtml(post.category)}</p>
+
+          <h1>${escapeHtml(post.title)}</h1>
+
+          <p class="blog-post-meta">
+            ${post.dateDisplay ? `${escapeHtml(post.dateDisplay)} • ` : ""}${escapeHtml(post.author)}
+          </p>
+        </div>
+      </header>
+
+      <div class="container blog-post-layout">
+        ${imageHtml}
+
+        <div class="blog-post-content">
+          ${post.contentHtml}
+        </div>
+
+        ${tagList}
+
+        <a class="button primary" href="../">Back to Blog</a>
+      </div>
+
+    </article>
+
+  </main>
+
+${pageFooter("../../")}
+`;
+
+  return baseHtml({
+    title: `${post.title} | ${site.siteName}`,
+    description: post.excerpt,
+    cssPath: "../../css/styles.css",
+    jsPath: "../../js/main.js",
+    body
+  });
+}
+
 function generateEpisodePage(episode) {
   const audioHtml = episode.audio
     ? `
@@ -863,11 +1080,26 @@ function cleanGeneratedEpisodePages(episodesDirPath) {
     }
   }
 }
+function cleanGeneratedBlogPages(blogDirPath) {
+  if (!fs.existsSync(blogDirPath)) {
+    return;
+  }
 
+  const entries = fs.readdirSync(blogDirPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(blogDirPath, entry.name);
+
+    if (entry.isDirectory()) {
+      fs.rmSync(fullPath, { recursive: true, force: true });
+    }
+  }
+}
 async function build() {
   console.log("Starting Next Steps Show site build...");
 
   ensureDir(episodesDir);
+  ensureDir(blogDir);
 
   const rssText = await fetchRssFeed();
   const episodes = parseEpisodesFromRss(rssText);
@@ -909,6 +1141,23 @@ for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
 
   const homePageHtml = generateHomePage(episodes);
   fs.writeFileSync(path.join(publicDir, "index.html"), homePageHtml, "utf8");
+
+const blogPosts = readBlogPosts();
+
+cleanGeneratedBlogPages(blogDir);
+
+const blogIndexHtml = generateBlogIndex(blogPosts);
+fs.writeFileSync(path.join(blogDir, "index.html"), blogIndexHtml, "utf8");
+
+for (const post of blogPosts) {
+  const postDir = path.join(blogDir, post.slug);
+  ensureDir(postDir);
+
+  const postHtml = generateBlogPostPage(post);
+  fs.writeFileSync(path.join(postDir, "index.html"), postHtml, "utf8");
+}
+
+console.log(`Built ${blogPosts.length} blog posts.`);
 
   for (const episode of episodes) {
     const episodeDir = path.join(episodesDir, episode.slug);

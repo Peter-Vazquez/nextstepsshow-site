@@ -1984,3 +1984,243 @@ grid-template-columns: 1fr;
     grid-template-columns: 1fr;
   }
 }
+
+/* Blog system */
+
+.blog-page,
+.blog-post-page {
+  background: var(--light);
+}
+
+.blog-hero,
+.blog-post-header {
+  background:
+    linear-gradient(135deg, rgba(16,16,16,.92), rgba(16,16,16,.78)),
+    url("../images/hero.jpg");
+  background-position: center;
+  background-size: cover;
+  color: var(--light);
+  padding: 86px 0;
+}
+
+.blog-hero-inner,
+.blog-post-header .container {
+  max-width: 900px;
+}
+
+.blog-hero h1,
+.blog-post-header h1 {
+  color: var(--light);
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  line-height: 1.05;
+  margin: 0 0 24px;
+}
+
+.blog-hero-lead,
+.blog-post-meta {
+  color: rgba(255,255,255,.9);
+  font-size: 1.18rem;
+  line-height: 1.7;
+}
+
+.blog-list-section {
+  padding: 72px 0;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 36px;
+}
+
+.blog-card {
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.blog-card-image {
+  background: var(--dark);
+  display: block;
+  overflow: hidden;
+}
+
+.blog-card-image img {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.blog-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 28px;
+}
+
+.blog-meta {
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.blog-card h3 {
+  color: var(--dark);
+  margin: 0 0 14px;
+}
+
+.blog-card h3 a {
+  color: var(--dark);
+  text-decoration: none;
+}
+
+.blog-card h3 a:hover {
+  color: var(--accent);
+}
+
+.blog-card p {
+  line-height: 1.7;
+}
+
+.blog-read-link {
+  align-self: flex-start;
+  border-bottom: 2px solid var(--gold);
+  color: var(--accent);
+  font-weight: 800;
+  margin-top: auto;
+  padding-bottom: 2px;
+  text-decoration: none;
+}
+
+.blog-read-link:hover {
+  color: var(--accent-dark);
+}
+
+.empty-state {
+  background: #ffffff;
+  border-left: 6px solid var(--accent);
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  padding: 36px;
+}
+
+.empty-state h2 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.blog-back-link {
+  color: var(--gold);
+  display: inline-block;
+  font-weight: 800;
+  margin-bottom: 24px;
+  text-decoration: none;
+}
+
+.blog-back-link:hover {
+  color: var(--light);
+}
+
+.blog-post-layout {
+  max-width: 920px;
+  padding-bottom: 72px;
+  padding-top: 56px;
+}
+
+.blog-post-image {
+  box-shadow: 0 14px 36px rgba(0,0,0,.14);
+  display: block;
+  margin-bottom: 36px;
+  width: 100%;
+}
+
+.blog-post-content {
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  padding: 42px;
+}
+
+.blog-post-content h2,
+.blog-post-content h3,
+.blog-post-content h4 {
+  color: var(--dark);
+  margin-top: 1.5em;
+}
+
+.blog-post-content p {
+  font-size: 1.08rem;
+  line-height: 1.85;
+  margin: 0 0 22px;
+}
+
+.blog-post-content a {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.blog-post-content blockquote {
+  border-left: 5px solid var(--accent);
+  color: #444444;
+  font-size: 1.12rem;
+  line-height: 1.8;
+  margin: 30px 0;
+  padding-left: 24px;
+}
+
+.blog-post-content ul,
+.blog-post-content ol {
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.blog-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 28px 0;
+}
+
+.blog-post-tags span {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  color: var(--dark);
+  font-size: .85rem;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+@media (max-width: 1100px) {
+  .blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .blog-hero,
+  .blog-post-header {
+    padding: 64px 0;
+  }
+
+  .blog-list-section {
+    padding: 52px 0;
+  }
+
+  .blog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-post-layout {
+    padding-bottom: 52px;
+    padding-top: 42px;
+  }
+
+  .blog-post-content {
+    padding: 30px;
+  }
+}
