@@ -1527,3 +1527,22 @@ grid-template-columns: 1fr;
     max-width: 420px;
   }
 }
+
+/* Center podcast platform buttons on homepage */
+
+.platform-section .platform-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.platform-section .platform-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
