@@ -11,6 +11,7 @@ const blogDir = path.join(publicDir, "blog");
 const siteConfigPath = path.join(__dirname, "data", "site.json");
 
 const EPISODES_PER_PAGE = 12;
+const BLOG_POSTS_PER_PAGE = 9;
 
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
 
@@ -519,6 +520,44 @@ function generatePagination(currentPage, totalPages, siteRootPrefix) {
         </nav>`;
 }
 
+function getBlogArchiveUrl(pageNumber, activePathPrefix) {
+  if (pageNumber <= 1) {
+    return `${activePathPrefix}blog/`;
+  }
+
+  return `${activePathPrefix}blog/page/${pageNumber}/`;
+}
+
+function generateBlogPagination(currentPage, totalPages, activePathPrefix) {
+  if (totalPages <= 1) {
+    return "";
+  }
+
+  let pageLinks = "";
+
+  if (currentPage > 1) {
+    pageLinks += `<a href="${getBlogArchiveUrl(currentPage - 1, activePathPrefix)}">Previous</a>`;
+  }
+
+  for (let page = 1; page <= totalPages; page++) {
+    if (page === currentPage) {
+      pageLinks += `<span class="current-page">${page}</span>`;
+    } else {
+      pageLinks += `<a href="${getBlogArchiveUrl(page, activePathPrefix)}">${page}</a>`;
+    }
+  }
+
+  if (currentPage < totalPages) {
+    pageLinks += `<a href="${getBlogArchiveUrl(currentPage + 1, activePathPrefix)}">Next</a>`;
+  }
+
+  return `
+        <nav class="pagination blog-pagination" aria-label="Blog archive pagination">
+          ${pageLinks}
+        </nav>`;
+}
+
+
 function generateEpisodesIndex({
   episodes,
   currentPage = 1,
@@ -890,17 +929,33 @@ function blogPostCard(post, activePathPrefix = "../") {
             </div>
           </article>`;
 }
-function generateBlogIndex(posts) {
-  const postCards = posts.length
-    ? posts.map((post) => blogPostCard(post, "../")).join("\n")
+function generateBlogIndex({
+  posts,
+  currentPage = 1,
+  totalPages = 1,
+  activePathPrefix = "../",
+  cssPath = "../css/styles.css",
+  jsPath = "../js/main.js"
+}) {
+  const startIndex = (currentPage - 1) * BLOG_POSTS_PER_PAGE;
+  const pagePosts = posts.slice(startIndex, startIndex + BLOG_POSTS_PER_PAGE);
+
+  const postCards = pagePosts.length
+    ? pagePosts.map((post) => blogPostCard(post, activePathPrefix)).join("\n")
     : `
           <div class="empty-state">
             <h2>Blog posts are coming soon.</h2>
             <p>Written commentary, show notes, and issue analysis will appear here as new posts are published.</p>
           </div>`;
 
+  const pagination = generateBlogPagination(currentPage, totalPages, activePathPrefix);
+
+  const pageTitle = currentPage === 1
+    ? `Blog | ${site.siteName}`
+    : `Blog Page ${currentPage} | ${site.siteName}`;
+
   const body = `
-${pageHeader("../")}
+${pageHeader(activePathPrefix)}
 
   <main class="blog-page">
 
@@ -915,34 +970,39 @@ ${pageHeader("../")}
         </p>
       </div>
     </section>
-   
-${blogTermLinks(posts, "../")}
-   
+
+${currentPage === 1 ? blogTermLinks(posts, activePathPrefix) : ""}
+
     <section class="blog-list-section">
       <div class="container">
 
         <div class="section-heading">
           <p class="eyebrow">Latest Posts</p>
           <h2>Read the Latest</h2>
+          <p>
+            Page ${currentPage} of ${totalPages}
+          </p>
         </div>
 
         <div class="blog-grid">
 ${postCards}
         </div>
 
+${pagination}
+
       </div>
     </section>
 
   </main>
 
-${pageFooter("../")}
+${pageFooter(activePathPrefix)}
 `;
 
   return baseHtml({
-    title: `Blog | ${site.siteName}`,
+    title: pageTitle,
     description: "Written commentary, show notes, video recaps, guest highlights, and issue analysis from The Next Steps Show.",
-    cssPath: "../css/styles.css",
-    jsPath: "../js/main.js",
+    cssPath,
+    jsPath,
     body
   });
 }
@@ -1309,8 +1369,34 @@ const blogPosts = readBlogPosts();
 
 cleanGeneratedBlogPages(blogDir);
 
-const blogIndexHtml = generateBlogIndex(blogPosts);
+const totalBlogPages = Math.max(1, Math.ceil(blogPosts.length / BLOG_POSTS_PER_PAGE));
+
+const blogIndexHtml = generateBlogIndex({
+  posts: blogPosts,
+  currentPage: 1,
+  totalPages: totalBlogPages,
+  activePathPrefix: "../",
+  cssPath: "../css/styles.css",
+  jsPath: "../js/main.js"
+});
+
 fs.writeFileSync(path.join(blogDir, "index.html"), blogIndexHtml, "utf8");
+
+for (let pageNumber = 2; pageNumber <= totalBlogPages; pageNumber++) {
+  const pageDir = path.join(blogDir, "page", String(pageNumber));
+  ensureDir(pageDir);
+
+  const pageHtml = generateBlogIndex({
+    posts: blogPosts,
+    currentPage: pageNumber,
+    totalPages: totalBlogPages,
+    activePathPrefix: "../../../",
+    cssPath: "../../../css/styles.css",
+    jsPath: "../../../js/main.js"
+  });
+
+  fs.writeFileSync(path.join(pageDir, "index.html"), pageHtml, "utf8");
+}
 
 for (const post of blogPosts) {
   const postDir = path.join(blogDir, post.slug);
@@ -1322,6 +1408,7 @@ for (const post of blogPosts) {
 
 generateBlogTaxonomyPages(blogPosts);
 
+console.log(`Built ${totalBlogPages} blog archive pages.`);
 console.log(`Built ${blogPosts.length} blog posts.`);
 
   for (const episode of episodes) {
