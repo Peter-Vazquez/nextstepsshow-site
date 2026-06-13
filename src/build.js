@@ -1247,21 +1247,61 @@ ${pageFooter(activePathPrefix)}
     image: pageEpisodes[0]?.image || "images/site-logo.png?v=2"
   });
 }
+function getEpisodeTopicList(episode) {
+  const text = stripHtml(decodeHtmlEntities(episode.descriptionText || episode.excerpt || ""))
+    .replace(/\s+/g, " ")
+    .trim();
 
+  if (!text) {
+    return "";
+  }
+
+  const sentences = text
+    .split(/[.!?]\s+/)
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length >= 35 && sentence.length <= 220)
+    .slice(0, 5);
+
+  if (!sentences.length) {
+    return "";
+  }
+
+  return `
+          <ul class="show-note-topic-list">
+${sentences.map((sentence) => `            <li>${escapeHtml(sentence)}</li>`).join("\n")}
+          </ul>`;
+}
 function generateShowNotePage(episode) {
   const imageHtml = episode.image
     ? `<img class="blog-post-image show-note-image" src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
     : "";
 
-  const audioHtml = episode.audio
+  const audioPlayerHtml = episode.audio
     ? `
-          <audio controls preload="metadata" class="audio-player show-note-audio">
-            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>`
-    : "";
+            <audio controls preload="metadata" class="audio-player show-note-audio">
+              <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>`
+    : `
+            <p>
+              Audio for this episode is available through the full episode archive.
+            </p>`;
 
   const durationText = episode.duration ? ` • ${escapeHtml(episode.duration)}` : "";
+  const topicListHtml = getEpisodeTopicList(episode);
+
+  const topicsSection = topicListHtml
+    ? `
+          <section class="show-note-section">
+            <h2>In This Episode</h2>
+
+            <p>
+              Key themes and ideas from this conversation include:
+            </p>
+
+${topicListHtml}
+          </section>`
+    : "";
 
   const body = `
 ${pageHeader("../../../")}
@@ -1287,17 +1327,44 @@ ${pageHeader("../../../")}
       <div class="container blog-post-layout">
         ${imageHtml}
 
-        <div class="blog-post-content">
-          <h2>Episode Summary</h2>
+        <div class="blog-post-content show-note-content">
 
-          ${formatEpisodeDescription(episode.description || episode.descriptionText)}
+          <section class="show-note-section show-note-listen-section">
+            <h2>Listen to the Episode</h2>
 
-          ${audioHtml}
+            <p>
+              Hear the full conversation from The Next Steps Show archive.
+            </p>
 
-          <div class="show-note-actions">
-            <a class="button primary" href="../../../episodes/${escapeHtml(episode.slug)}/">Open Full Episode Page</a>
-            <a class="button secondary" href="../">Back to Show Notes</a>
-          </div>
+${audioPlayerHtml}
+
+            <div class="show-note-actions">
+              <a class="button primary" href="../../../episodes/${escapeHtml(episode.slug)}/">Open Full Episode Page</a>
+              <a class="button secondary" href="../">Back to Show Notes</a>
+            </div>
+          </section>
+
+          <section class="show-note-section">
+            <h2>Episode Summary</h2>
+
+            ${formatEpisodeDescription(episode.description || episode.descriptionText)}
+          </section>
+
+${topicsSection}
+
+          <section class="show-note-section show-note-more-section">
+            <h2>Keep Exploring</h2>
+
+            <p>
+              Continue through the podcast archive for more conversations on faith, family, freedom, leadership, business, culture, and civic life.
+            </p>
+
+            <div class="show-note-actions">
+              <a class="button primary" href="../">Browse More Show Notes</a>
+              <a class="button secondary" href="../../../episodes/">Browse All Episodes</a>
+            </div>
+          </section>
+
         </div>
       </div>
 

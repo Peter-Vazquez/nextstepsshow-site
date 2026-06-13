@@ -2344,3 +2344,48 @@ grid-template-columns: 1fr;
     padding: 30px;
   }
 }
+
+/* Improved show-note page structure */
+
+.show-note-content .show-note-section {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 34px;
+  padding-bottom: 32px;
+}
+
+.show-note-content .show-note-section:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.show-note-listen-section {
+  background: var(--muted);
+  border-left: 5px solid var(--accent);
+  padding: 28px;
+}
+
+.show-note-listen-section h2,
+.show-note-more-section h2 {
+  margin-top: 0;
+}
+
+.show-note-topic-list {
+  margin: 22px 0 0;
+  padding-left: 22px;
+}
+
+.show-note-topic-list li {
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.show-note-more-section {
+  background: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .show-note-listen-section {
+    padding: 24px;
+  }
+}
