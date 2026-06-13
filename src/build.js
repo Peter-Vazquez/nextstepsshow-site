@@ -8,10 +8,12 @@ const publicDir = path.join(rootDir, "public");
 const episodesDir = path.join(publicDir, "episodes");
 const blogSourceDir = path.join(__dirname, "blog", "posts");
 const blogDir = path.join(publicDir, "blog");
+const showNotesDir = path.join(blogDir, "show-notes");
 const siteConfigPath = path.join(__dirname, "data", "site.json");
 
 const EPISODES_PER_PAGE = 12;
 const BLOG_POSTS_PER_PAGE = 9;
+const SHOW_NOTES_PER_PAGE = 12;
 
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
 
@@ -557,6 +559,42 @@ function generateBlogPagination(currentPage, totalPages, activePathPrefix) {
         </nav>`;
 }
 
+function getShowNotesArchiveUrl(pageNumber, activePathPrefix) {
+  if (pageNumber <= 1) {
+    return `${activePathPrefix}blog/show-notes/`;
+  }
+
+  return `${activePathPrefix}blog/show-notes/page/${pageNumber}/`;
+}
+
+function generateShowNotesPagination(currentPage, totalPages, activePathPrefix) {
+  if (totalPages <= 1) {
+    return "";
+  }
+
+  let pageLinks = "";
+
+  if (currentPage > 1) {
+    pageLinks += `<a href="${getShowNotesArchiveUrl(currentPage - 1, activePathPrefix)}">Previous</a>`;
+  }
+
+  for (let page = 1; page <= totalPages; page++) {
+    if (page === currentPage) {
+      pageLinks += `<span class="current-page">${page}</span>`;
+    } else {
+      pageLinks += `<a href="${getShowNotesArchiveUrl(page, activePathPrefix)}">${page}</a>`;
+    }
+  }
+
+  if (currentPage < totalPages) {
+    pageLinks += `<a href="${getShowNotesArchiveUrl(currentPage + 1, activePathPrefix)}">Next</a>`;
+  }
+
+  return `
+        <nav class="pagination show-notes-pagination" aria-label="Show notes archive pagination">
+          ${pageLinks}
+        </nav>`;
+}
 
 function generateEpisodesIndex({
   episodes,
@@ -904,6 +942,25 @@ ${tagLinks}
       </div>
     </section>`;
 }
+
+function showNotesCallout(activePathPrefix = "../") {
+  return `
+    <section class="blog-show-notes-callout-section">
+      <div class="container blog-show-notes-callout-box">
+        <div>
+          <p class="eyebrow">Podcast Show Notes</p>
+          <h2>Episode Notes Generated From The Show Archive</h2>
+
+          <p>
+            Browse episode-based show notes generated from The Next Steps Show podcast archive, including episode summaries, audio, dates, durations, and links back to the full episode pages.
+          </p>
+        </div>
+
+        <a href="${activePathPrefix}blog/show-notes/" class="button primary">Browse Show Notes</a>
+      </div>
+    </section>`;
+}
+
 function blogPostCard(post, activePathPrefix = "../") {
   const postUrl = `${activePathPrefix}blog/${escapeHtml(post.slug)}/`;
   const imageHtml = post.image
@@ -969,7 +1026,9 @@ ${pageHeader(activePathPrefix)}
           Explore written commentary, show notes, video recaps, guest highlights, and issue analysis from The Next Steps Show.
         </p>
       </div>
-    </section>
+     </section>
+
+${currentPage === 1 ? showNotesCallout(activePathPrefix) : ""}
 
 ${currentPage === 1 ? blogTermLinks(posts, activePathPrefix) : ""}
 
@@ -1006,6 +1065,183 @@ ${pageFooter(activePathPrefix)}
     body
   });
 }
+
+function showNoteCard(episode, activePathPrefix = "../../") {
+  const showNoteUrl = `${activePathPrefix}blog/show-notes/${escapeHtml(episode.slug)}/`;
+  const imageHtml = episode.image
+    ? `<img src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
+    : "";
+
+  const metaItems = [episode.dateDisplay, episode.duration].filter(Boolean);
+  const metaHtml = metaItems.length
+    ? `<p class="blog-meta">Show Notes • ${escapeHtml(metaItems.join(" • "))}</p>`
+    : `<p class="blog-meta">Show Notes</p>`;
+
+  return `
+          <article class="blog-card show-note-card">
+            ${imageHtml ? `<a class="blog-card-image" href="${showNoteUrl}">${imageHtml}</a>` : ""}
+
+            <div class="blog-card-content">
+              ${metaHtml}
+
+              <h3>
+                <a href="${showNoteUrl}">${escapeHtml(episode.title)}</a>
+              </h3>
+
+              <p>
+                ${escapeHtml(createCleanExcerpt(episode.descriptionText || episode.excerpt, 180))}
+              </p>
+
+              <a class="blog-read-link" href="${showNoteUrl}">Read Show Notes</a>
+            </div>
+          </article>`;
+}
+
+function generateShowNotesIndex({
+  episodes,
+  currentPage = 1,
+  totalPages = 1,
+  activePathPrefix = "../../",
+  cssPath = "../../css/styles.css",
+  jsPath = "../../js/main.js"
+}) {
+  const startIndex = (currentPage - 1) * SHOW_NOTES_PER_PAGE;
+  const pageEpisodes = episodes.slice(startIndex, startIndex + SHOW_NOTES_PER_PAGE);
+
+  const showNoteCards = pageEpisodes.length
+    ? pageEpisodes.map((episode) => showNoteCard(episode, activePathPrefix)).join("\n")
+    : `
+          <div class="empty-state">
+            <h2>Show notes are coming soon.</h2>
+            <p>Episode-based show notes will appear here as the podcast archive is generated.</p>
+          </div>`;
+
+  const pagination = generateShowNotesPagination(currentPage, totalPages, activePathPrefix);
+
+  const pageTitle = currentPage === 1
+    ? `Show Notes | ${site.siteName}`
+    : `Show Notes Page ${currentPage} | ${site.siteName}`;
+
+  const body = `
+${pageHeader(activePathPrefix)}
+
+  <main class="blog-page show-notes-page">
+
+    <section class="blog-hero">
+      <div class="container blog-hero-inner">
+        <p class="eyebrow">Podcast Show Notes</p>
+
+        <h1>Episode Notes From The Next Steps Show Archive</h1>
+
+        <p class="blog-hero-lead">
+          Browse episode summaries, audio, dates, durations, and links to full podcast episodes from The Next Steps Show.
+        </p>
+      </div>
+    </section>
+
+    <section class="blog-list-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <p class="eyebrow">Show Notes Archive</p>
+          <h2>Latest Episode Notes</h2>
+          <p>
+            Page ${currentPage} of ${totalPages}
+          </p>
+        </div>
+
+        <div class="blog-grid">
+${showNoteCards}
+        </div>
+
+${pagination}
+
+      </div>
+    </section>
+
+  </main>
+
+${pageFooter(activePathPrefix)}
+`;
+
+  return baseHtml({
+    title: pageTitle,
+    description: "Episode show notes, summaries, audio, and archive links from The Next Steps Show.",
+    cssPath,
+    jsPath,
+    body
+  });
+}
+
+function generateShowNotePage(episode) {
+  const imageHtml = episode.image
+    ? `<img class="blog-post-image show-note-image" src="${escapeHtml(episode.image)}" alt="${escapeHtml(episode.title)} artwork">`
+    : "";
+
+  const audioHtml = episode.audio
+    ? `
+          <audio controls preload="metadata" class="audio-player show-note-audio">
+            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>`
+    : "";
+
+  const durationText = episode.duration ? ` • ${escapeHtml(episode.duration)}` : "";
+
+  const body = `
+${pageHeader("../../../")}
+
+  <main class="blog-post-page show-note-post-page">
+
+    <article class="blog-post">
+
+      <header class="blog-post-header">
+        <div class="container">
+          <a class="blog-back-link" href="../">← Back to Show Notes</a>
+
+          <p class="eyebrow">Show Notes</p>
+
+          <h1>${escapeHtml(episode.title)}</h1>
+
+          <p class="blog-post-meta">
+            ${episode.dateDisplay ? `${escapeHtml(episode.dateDisplay)}` : "Episode Archive"}${durationText}
+          </p>
+        </div>
+      </header>
+
+      <div class="container blog-post-layout">
+        ${imageHtml}
+
+        <div class="blog-post-content">
+          <h2>Episode Summary</h2>
+
+          ${formatEpisodeDescription(episode.description || episode.descriptionText)}
+
+          ${audioHtml}
+
+          <div class="show-note-actions">
+            <a class="button primary" href="../../../episodes/${escapeHtml(episode.slug)}/">Open Full Episode Page</a>
+            <a class="button secondary" href="../">Back to Show Notes</a>
+          </div>
+        </div>
+      </div>
+
+    </article>
+
+  </main>
+
+${pageFooter("../../../")}
+`;
+
+  return baseHtml({
+    title: `Show Notes: ${episode.title} | ${site.siteName}`,
+    description: episode.excerpt,
+    cssPath: "../../../css/styles.css",
+    jsPath: "../../../js/main.js",
+    body
+  });
+}
+
 function generateBlogArchivePage({ title, description, posts, activePathPrefix, cssPath, jsPath }) {
   const postCards = posts.length
     ? posts.map((post) => blogPostCard(post, activePathPrefix)).join("\n")
@@ -1318,6 +1554,50 @@ function generateBlogTaxonomyPages(posts) {
   console.log(`Built ${tags.length} blog tag pages.`);
 }
 
+function generateShowNotesPages(episodes) {
+  ensureDir(showNotesDir);
+
+  const totalShowNotesPages = Math.max(1, Math.ceil(episodes.length / SHOW_NOTES_PER_PAGE));
+
+  const showNotesIndexHtml = generateShowNotesIndex({
+    episodes,
+    currentPage: 1,
+    totalPages: totalShowNotesPages,
+    activePathPrefix: "../../",
+    cssPath: "../../css/styles.css",
+    jsPath: "../../js/main.js"
+  });
+
+  fs.writeFileSync(path.join(showNotesDir, "index.html"), showNotesIndexHtml, "utf8");
+
+  for (let pageNumber = 2; pageNumber <= totalShowNotesPages; pageNumber++) {
+    const pageDir = path.join(showNotesDir, "page", String(pageNumber));
+    ensureDir(pageDir);
+
+    const pageHtml = generateShowNotesIndex({
+      episodes,
+      currentPage: pageNumber,
+      totalPages: totalShowNotesPages,
+      activePathPrefix: "../../../../",
+      cssPath: "../../../../css/styles.css",
+      jsPath: "../../../../js/main.js"
+    });
+
+    fs.writeFileSync(path.join(pageDir, "index.html"), pageHtml, "utf8");
+  }
+
+  for (const episode of episodes) {
+    const showNoteDir = path.join(showNotesDir, episode.slug);
+    ensureDir(showNoteDir);
+
+    const showNoteHtml = generateShowNotePage(episode);
+    fs.writeFileSync(path.join(showNoteDir, "index.html"), showNoteHtml, "utf8");
+  }
+
+  console.log(`Built ${totalShowNotesPages} show notes archive pages.`);
+  console.log(`Built ${episodes.length} show note pages.`);
+}
+
 async function build() {
   console.log("Starting Next Steps Show site build...");
 
@@ -1368,6 +1648,7 @@ for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
 const blogPosts = readBlogPosts();
 
 cleanGeneratedBlogPages(blogDir);
+ensureDir(showNotesDir);
 
 const totalBlogPages = Math.max(1, Math.ceil(blogPosts.length / BLOG_POSTS_PER_PAGE));
 
@@ -1407,6 +1688,7 @@ for (const post of blogPosts) {
 }
 
 generateBlogTaxonomyPages(blogPosts);
+generateShowNotesPages(episodes);
 
 console.log(`Built ${totalBlogPages} blog archive pages.`);
 console.log(`Built ${blogPosts.length} blog posts.`);

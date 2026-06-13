@@ -2287,3 +2287,60 @@ grid-template-columns: 1fr;
     padding: 42px 0;
   }
 }
+
+/* Auto-generated podcast show notes */
+
+.blog-show-notes-callout-section {
+  background: #ffffff;
+  padding: 56px 0;
+}
+
+.blog-show-notes-callout-box {
+  align-items: center;
+  background: var(--dark);
+  border-top: 5px solid var(--gold);
+  color: var(--light);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  padding: 38px;
+}
+
+.blog-show-notes-callout-box h2 {
+  color: var(--light);
+  margin-top: 0;
+}
+
+.blog-show-notes-callout-box p {
+  color: rgba(255,255,255,.86);
+  margin-bottom: 0;
+}
+
+.show-note-card .blog-card-image img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.show-note-image {
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.show-note-audio {
+  margin-top: 30px;
+}
+
+.show-note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+@media (max-width: 900px) {
+  .blog-show-notes-callout-box {
+    grid-template-columns: 1fr;
+    padding: 30px;
+  }
+}
