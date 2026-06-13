@@ -805,7 +805,66 @@ return baseHtml({
     body
   });
 }
+function getUniqueBlogTerms(posts, fieldName) {
+  const terms = new Map();
 
+  posts.forEach((post) => {
+    const values = fieldName === "tags" ? post.tags : [post.category];
+
+    values
+      .filter(Boolean)
+      .forEach((value) => {
+        const label = String(value).trim();
+        const slug = slugify(label);
+
+        if (label && slug && !terms.has(slug)) {
+          terms.set(slug, label);
+        }
+      });
+  });
+
+  return Array.from(terms.entries())
+    .map(([slug, label]) => ({ slug, label }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function blogTermLinks(posts, activePathPrefix = "../") {
+  const categories = getUniqueBlogTerms(posts, "category");
+  const tags = getUniqueBlogTerms(posts, "tags");
+
+  if (!categories.length && !tags.length) {
+    return "";
+  }
+
+  const categoryLinks = categories
+    .map((category) => `<a href="${activePathPrefix}blog/category/${escapeHtml(category.slug)}/">${escapeHtml(category.label)}</a>`)
+    .join("\n");
+
+  const tagLinks = tags
+    .map((tag) => `<a href="${activePathPrefix}blog/tag/${escapeHtml(tag.slug)}/">${escapeHtml(tag.label)}</a>`)
+    .join("\n");
+
+  return `
+    <section class="blog-taxonomy-section">
+      <div class="container blog-taxonomy-grid">
+
+        <div class="blog-taxonomy-card">
+          <h2>Browse by Category</h2>
+          <div class="blog-taxonomy-links">
+${categoryLinks}
+          </div>
+        </div>
+
+        <div class="blog-taxonomy-card">
+          <h2>Browse by Tag</h2>
+          <div class="blog-taxonomy-links">
+${tagLinks}
+          </div>
+        </div>
+
+      </div>
+    </section>`;
+}
 function blogPostCard(post, activePathPrefix = "../") {
   const postUrl = `${activePathPrefix}blog/${escapeHtml(post.slug)}/`;
   const imageHtml = post.image
@@ -856,7 +915,9 @@ ${pageHeader("../")}
         </p>
       </div>
     </section>
-
+   
+${blogTermLinks(posts, "../")}
+   
     <section class="blog-list-section">
       <div class="container">
 
@@ -885,12 +946,69 @@ ${pageFooter("../")}
     body
   });
 }
+function generateBlogArchivePage({ title, description, posts, activePathPrefix, cssPath, jsPath }) {
+  const postCards = posts.length
+    ? posts.map((post) => blogPostCard(post, activePathPrefix)).join("\n")
+    : `
+          <div class="empty-state">
+            <h2>No posts found.</h2>
+            <p>More posts will appear here as new articles are published.</p>
+          </div>`;
 
+  const body = `
+${pageHeader(activePathPrefix)}
+
+  <main class="blog-page">
+
+    <section class="blog-hero">
+      <div class="container blog-hero-inner">
+        <p class="eyebrow">The Next Steps Blog</p>
+
+        <h1>${escapeHtml(title)}</h1>
+
+        <p class="blog-hero-lead">
+          ${escapeHtml(description)}
+        </p>
+      </div>
+    </section>
+
+    <section class="blog-list-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <p class="eyebrow">Archive</p>
+          <h2>Posts in This Collection</h2>
+        </div>
+
+        <div class="blog-grid">
+${postCards}
+        </div>
+
+        <div class="blog-archive-back">
+          <a href="${activePathPrefix}blog/" class="button primary">Back to Blog</a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+${pageFooter(activePathPrefix)}
+`;
+
+  return baseHtml({
+    title: `${title} | ${site.siteName}`,
+    description,
+    cssPath,
+    jsPath,
+    body
+  });
+}
 function generateBlogPostPage(post) {
   const tagList = post.tags.length
     ? `
           <div class="blog-post-tags">
-            ${post.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("\n")}
+            ${post.tags.map((tag) => `<a href="../../blog/tag/${escapeHtml(slugify(tag))}/">${escapeHtml(tag)}</a>`).join("\n")}
           </div>`
     : "";
 
@@ -1095,6 +1213,51 @@ function cleanGeneratedBlogPages(blogDirPath) {
     }
   }
 }
+
+function generateBlogTaxonomyPages(posts) {
+  const categories = getUniqueBlogTerms(posts, "category");
+  const tags = getUniqueBlogTerms(posts, "tags");
+
+  for (const category of categories) {
+    const categoryPosts = posts.filter((post) => slugify(post.category) === category.slug);
+    const categoryDir = path.join(blogDir, "category", category.slug);
+
+    ensureDir(categoryDir);
+
+    const categoryHtml = generateBlogArchivePage({
+      title: `${category.label} Posts`,
+      description: `Read posts from The Next Steps Blog filed under ${category.label}.`,
+      posts: categoryPosts,
+      activePathPrefix: "../../../",
+      cssPath: "../../../css/styles.css",
+      jsPath: "../../../js/main.js"
+    });
+
+    fs.writeFileSync(path.join(categoryDir, "index.html"), categoryHtml, "utf8");
+  }
+
+  for (const tag of tags) {
+    const tagPosts = posts.filter((post) => post.tags.some((postTag) => slugify(postTag) === tag.slug));
+    const tagDir = path.join(blogDir, "tag", tag.slug);
+
+    ensureDir(tagDir);
+
+    const tagHtml = generateBlogArchivePage({
+      title: `${tag.label} Posts`,
+      description: `Read posts from The Next Steps Blog tagged with ${tag.label}.`,
+      posts: tagPosts,
+      activePathPrefix: "../../../",
+      cssPath: "../../../css/styles.css",
+      jsPath: "../../../js/main.js"
+    });
+
+    fs.writeFileSync(path.join(tagDir, "index.html"), tagHtml, "utf8");
+  }
+
+  console.log(`Built ${categories.length} blog category pages.`);
+  console.log(`Built ${tags.length} blog tag pages.`);
+}
+
 async function build() {
   console.log("Starting Next Steps Show site build...");
 
@@ -1156,6 +1319,8 @@ for (const post of blogPosts) {
   const postHtml = generateBlogPostPage(post);
   fs.writeFileSync(path.join(postDir, "index.html"), postHtml, "utf8");
 }
+
+generateBlogTaxonomyPages(blogPosts);
 
 console.log(`Built ${blogPosts.length} blog posts.`);
 
