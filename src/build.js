@@ -71,17 +71,45 @@ function createCleanExcerpt(value, limit = 180) {
 
   return `${excerpt.replace(/[\s,;:.-]+$/, "")}...`;
 }
+
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)));
+}
+
 function formatEpisodeDescription(value) {
-  const cleanText = String(value || "")
+  const rawDescription = getRssTextField(value);
+
+  const text = decodeHtmlEntities(rawDescription)
     .replace(/\r/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<p[^>]*>/gi, "")
+    .replace(/<\/div>/gi, "\n\n")
+    .replace(/<div[^>]*>/gi, "")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "• ")
+    .replace(/<\/h[1-6]>/gi, "\n\n")
+    .replace(/<h[1-6][^>]*>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/[ \t]*\n[ \t]*/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
-  if (!cleanText) {
+  if (!text) {
     return "<p>Episode details will be available soon.</p>";
   }
 
-  return cleanText
+  return text
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
@@ -738,7 +766,7 @@ ${pageHeader("../../")}
 
           <div class="episode-description">
             <h2>Episode Details</h2>
-            ${formatEpisodeDescription(episode.descriptionText)}
+            ${formatEpisodeDescription(episode.description || episode.descriptionText)}
           </div>
 
           <a class="button primary" href="../">Back to All Episodes</a>
