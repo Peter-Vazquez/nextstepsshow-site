@@ -1348,3 +1348,92 @@ grid-template-columns: 1fr;
     max-height: none;
   }
 }
+/* Restore simple individual episode layout */
+
+.episode-detail {
+  background: var(--light);
+  color: var(--text);
+  padding: 72px 0;
+}
+
+.episode-detail .episode-detail-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 42px;
+  align-items: start;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text);
+  overflow: visible;
+}
+
+.episode-detail-media {
+  background: transparent;
+  min-height: auto;
+  padding: 0;
+  display: block;
+}
+
+.episode-detail-artwork {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.episode-detail-copy {
+  padding: 0;
+}
+
+.episode-detail-copy h1 {
+  color: var(--dark);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.1;
+  margin: 0 0 18px;
+}
+
+.episode-duration {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.audio-player {
+  width: 100%;
+  margin: 22px 0 28px;
+}
+
+.episode-description {
+  background: transparent;
+  border-left: 0;
+  border-radius: 0;
+  font-size: 1rem;
+  margin: 28px 0;
+  padding: 0;
+}
+
+.episode-description h2 {
+  color: var(--dark);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin: 0 0 16px;
+}
+
+.episode-description p {
+  color: var(--text);
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+
+@media (max-width: 900px) {
+  .episode-detail .episode-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .episode-detail-artwork {
+    max-width: 420px;
+  }
+}

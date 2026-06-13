@@ -71,7 +71,23 @@ function createCleanExcerpt(value, limit = 180) {
 
   return `${excerpt.replace(/[\s,;:.-]+$/, "")}...`;
 }
+function formatEpisodeDescription(value) {
+  const cleanText = String(value || "")
+    .replace(/\r/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
+  if (!cleanText) {
+    return "<p>Episode details will be available soon.</p>";
+  }
+
+  return cleanText
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .join("\n");
+}
 function slugify(value) {
   return String(value)
     .toLowerCase()
@@ -689,19 +705,10 @@ ${pageFooter("./")}
 function generateEpisodePage(episode) {
   const audioHtml = episode.audio
     ? `
-              <audio controls preload="metadata" class="audio-player">
-                <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
-                Your browser does not support the audio element.
-              </audio>`
-    : "";
-
-  const listenUrl = episode.audio || episode.link;
-  const listenButton = listenUrl
-    ? `<a class="button primary episode-listen-button" href="${escapeHtml(listenUrl)}"${episode.audio ? "" : " target=\"_blank\" rel=\"noopener\""}>Listen Now</a>`
-    : "";
-
-  const durationHtml = episode.duration
-    ? `<span><strong>Duration</strong> ${escapeHtml(episode.duration)}</span>`
+          <audio controls preload="metadata" class="audio-player">
+            <source src="${escapeHtml(episode.audio)}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>`
     : "";
 
   const imageHtml = episode.image
@@ -714,42 +721,29 @@ ${pageHeader("../../")}
   <main>
 
     <section class="episode-detail">
-      <div class="container">
-        <a class="episode-back-link" href="../">← Back to All Episodes</a>
+      <div class="container episode-detail-grid">
 
-        <div class="episode-detail-grid">
+        <div class="episode-detail-media">
+          ${imageHtml}
+        </div>
 
-          <div class="episode-detail-media">
-            ${imageHtml}
+        <div class="episode-detail-copy">
+          <p class="episode-date">${escapeHtml(episode.dateDisplay)}</p>
+
+          <h1>${escapeHtml(episode.title)}</h1>
+
+          ${episode.duration ? `<p class="episode-duration">Duration: ${escapeHtml(episode.duration)}</p>` : ""}
+
+          ${audioHtml}
+
+          <div class="episode-description">
+            <h2>Episode Details</h2>
+            ${formatEpisodeDescription(episode.descriptionText)}
           </div>
 
-          <article class="episode-detail-copy">
-            <p class="eyebrow">Episode</p>
-
-            <h1>${escapeHtml(episode.title)}</h1>
-
-            <div class="episode-detail-meta">
-              ${episode.dateDisplay ? `<span><strong>Date</strong> ${escapeHtml(episode.dateDisplay)}</span>` : ""}
-              ${durationHtml}
-            </div>
-
-            <div class="episode-actions">
-              ${listenButton}
-            </div>
-
-            ${audioHtml}
-
-            <div class="episode-description">
-              <h2>Episode Details</h2>
-              <p>
-                ${escapeHtml(episode.descriptionText)}
-              </p>
-            </div>
-
-            <a class="episode-back-link bottom" href="../">← Back to All Episodes</a>
-          </article>
-
+          <a class="button primary" href="../">Back to All Episodes</a>
         </div>
+
       </div>
     </section>
 
