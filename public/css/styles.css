@@ -1546,3 +1546,209 @@ grid-template-columns: 1fr;
   align-items: center;
   justify-content: center;
 }
+
+/* Mission page */
+
+.mission-page {
+  background: var(--light);
+}
+
+.mission-hero {
+  background:
+    linear-gradient(135deg, rgba(16,16,16,.92), rgba(16,16,16,.78)),
+    url("../images/hero.jpg");
+  background-position: center;
+  background-size: cover;
+  color: var(--light);
+  padding: 86px 0;
+}
+
+.mission-hero-inner {
+  max-width: 860px;
+}
+
+.mission-hero h1 {
+  color: var(--light);
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  line-height: 1.05;
+  margin: 0 0 24px;
+}
+
+.mission-hero-lead {
+  color: rgba(255,255,255,.9);
+  font-size: 1.25rem;
+  line-height: 1.7;
+  max-width: 760px;
+}
+
+.mission-hero-actions,
+.mission-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.mission-statement-section,
+.mission-values-section,
+.mission-conversation-section,
+.mission-listener-section,
+.mission-cta-section {
+  padding: 72px 0;
+}
+
+.mission-statement-card {
+  background: #ffffff;
+  border-left: 6px solid var(--accent);
+  box-shadow: 0 12px 34px rgba(0,0,0,.08);
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 36px;
+  padding: 42px;
+}
+
+.mission-statement-card h2,
+.mission-conversation-section h2,
+.mission-listener-section h2,
+.mission-cta-box h2 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.mission-statement-card p {
+  font-size: 1.12rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.mission-values-section,
+.mission-listener-section {
+  background: var(--muted);
+}
+
+.mission-values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.mission-value-card {
+  background: #ffffff;
+  border-top: 4px solid var(--accent);
+  box-shadow: 0 8px 24px rgba(0,0,0,.07);
+  padding: 28px;
+}
+
+.mission-value-card h3 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.mission-value-card p {
+  margin-bottom: 0;
+}
+
+.mission-split-grid {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 42px;
+}
+
+.mission-split-grid p {
+  line-height: 1.8;
+}
+
+.mission-highlight-card {
+  background: var(--dark);
+  border-top: 5px solid var(--gold);
+  color: var(--light);
+  padding: 32px;
+}
+
+.mission-highlight-card h3 {
+  color: var(--light);
+  margin-top: 0;
+}
+
+.mission-highlight-card p {
+  color: rgba(255,255,255,.86);
+  margin-bottom: 0;
+}
+
+.mission-expectations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 34px;
+}
+
+.mission-expectations-grid div {
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.07);
+  padding: 28px;
+}
+
+.mission-expectations-grid h3 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.mission-cta-box {
+  align-items: center;
+  background: var(--dark);
+  border-top: 5px solid var(--accent);
+  color: var(--light);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  padding: 42px;
+}
+
+.mission-cta-box h2 {
+  color: var(--light);
+}
+
+.mission-cta-box p {
+  color: rgba(255,255,255,.86);
+}
+
+.mission-cta-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .mission-statement-card,
+  .mission-split-grid,
+  .mission-cta-box {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-values-grid,
+  .mission-expectations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-hero {
+    padding: 64px 0;
+  }
+
+  .mission-statement-section,
+  .mission-values-section,
+  .mission-conversation-section,
+  .mission-listener-section,
+  .mission-cta-section {
+    padding: 52px 0;
+  }
+
+  .mission-statement-card,
+  .mission-cta-box {
+    padding: 30px;
+  }
+
+  .mission-cta-actions {
+    justify-content: flex-start;
+  }
+}
