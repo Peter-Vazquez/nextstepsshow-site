@@ -16,6 +16,7 @@ const BLOG_POSTS_PER_PAGE = 9;
 const SHOW_NOTES_PER_PAGE = 12;
 
 const site = JSON.parse(fs.readFileSync(siteConfigPath, "utf8"));
+const SITE_URL = (site.siteUrl || "https://peter-vazquez.github.io/nextstepsshow-site").replace(/\/+$/, "");
 
 const markdown = new MarkdownIt({
   html: false,
@@ -39,6 +40,15 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeXml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
 }
 
 function stripHtml(value) {
@@ -1597,7 +1607,112 @@ function generateShowNotesPages(episodes) {
   console.log(`Built ${totalShowNotesPages} show notes archive pages.`);
   console.log(`Built ${episodes.length} show note pages.`);
 }
+function generateSitemapXml({ episodes, blogPosts, episodeArchivePages, blogArchivePages }) {
+  const urls = [];
 
+  function addUrl(pathName, options = {}) {
+    const cleanPath = String(pathName || "").replace(/^\/+/, "");
+    const loc = cleanPath ? `${SITE_URL}/${cleanPath}` : `${SITE_URL}/`;
+
+    urls.push({
+      loc,
+      changefreq: options.changefreq || "weekly",
+      priority: options.priority || "0.7"
+    });
+  }
+
+  addUrl("", { changefreq: "daily", priority: "1.0" });
+  addUrl("mission/", { changefreq: "monthly", priority: "0.7" });
+  addUrl("episodes/", { changefreq: "daily", priority: "0.9" });
+  addUrl("videos/", { changefreq: "weekly", priority: "0.8" });
+  addUrl("blog/", { changefreq: "daily", priority: "0.9" });
+  addUrl("blog/show-notes/", { changefreq: "daily", priority: "0.9" });
+  addUrl("guest/", { changefreq: "monthly", priority: "0.7" });
+  addUrl("contact/", { changefreq: "monthly", priority: "0.6" });
+  addUrl("advertise/", { changefreq: "monthly", priority: "0.7" });
+  addUrl("reviews/", { changefreq: "monthly", priority: "0.6" });
+  addUrl("sponsors/", { changefreq: "monthly", priority: "0.6" });
+  addUrl("nsrpn-online-radio/", { changefreq: "weekly", priority: "0.8" });
+
+  for (let pageNumber = 2; pageNumber <= episodeArchivePages; pageNumber++) {
+    addUrl(`episodes/page/${pageNumber}/`, { changefreq: "weekly", priority: "0.6" });
+  }
+
+  for (const episode of episodes) {
+    addUrl(`episodes/${episode.slug}/`, { changefreq: "monthly", priority: "0.7" });
+  }
+
+  for (let pageNumber = 2; pageNumber <= blogArchivePages; pageNumber++) {
+    addUrl(`blog/page/${pageNumber}/`, { changefreq: "weekly", priority: "0.6" });
+  }
+
+  for (const post of blogPosts) {
+    addUrl(`blog/${post.slug}/`, { changefreq: "monthly", priority: "0.8" });
+  }
+
+  const categories = getUniqueBlogTerms(blogPosts, "category");
+  const tags = getUniqueBlogTerms(blogPosts, "tags");
+
+  for (const category of categories) {
+    addUrl(`blog/category/${category.slug}/`, { changefreq: "weekly", priority: "0.6" });
+  }
+
+  for (const tag of tags) {
+    addUrl(`blog/tag/${tag.slug}/`, { changefreq: "weekly", priority: "0.6" });
+  }
+
+  const totalShowNotesPages = Math.max(1, Math.ceil(episodes.length / SHOW_NOTES_PER_PAGE));
+
+  for (let pageNumber = 2; pageNumber <= totalShowNotesPages; pageNumber++) {
+    addUrl(`blog/show-notes/page/${pageNumber}/`, { changefreq: "weekly", priority: "0.6" });
+  }
+
+  for (const episode of episodes) {
+    addUrl(`blog/show-notes/${episode.slug}/`, { changefreq: "monthly", priority: "0.7" });
+  }
+
+  const sitemapEntries = urls
+    .map((url) => {
+      return `  <url>
+    <loc>${escapeXml(url.loc)}</loc>
+    <changefreq>${escapeXml(url.changefreq)}</changefreq>
+    <priority>${escapeXml(url.priority)}</priority>
+  </url>`;
+    })
+    .join("\n");
+
+  return {
+    xml: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapEntries}
+</urlset>
+`,
+    urlCount: urls.length
+  };
+}
+
+function generateRobotsTxt() {
+  return `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+}
+
+function generateSearchFiles({ episodes, blogPosts, episodeArchivePages, blogArchivePages }) {
+  const sitemap = generateSitemapXml({
+    episodes,
+    blogPosts,
+    episodeArchivePages,
+    blogArchivePages
+  });
+
+  fs.writeFileSync(path.join(publicDir, "sitemap.xml"), sitemap.xml, "utf8");
+  fs.writeFileSync(path.join(publicDir, "robots.txt"), generateRobotsTxt(), "utf8");
+
+  console.log(`Built sitemap.xml with ${sitemap.urlCount} URLs.`);
+  console.log("Built robots.txt.");
+}
 async function build() {
   console.log("Starting Next Steps Show site build...");
 
@@ -1689,6 +1804,13 @@ for (const post of blogPosts) {
 
 generateBlogTaxonomyPages(blogPosts);
 generateShowNotesPages(episodes);
+
+generateSearchFiles({
+  episodes,
+  blogPosts,
+  episodeArchivePages: totalPages,
+  blogArchivePages: totalBlogPages
+});
 
 console.log(`Built ${totalBlogPages} blog archive pages.`);
 console.log(`Built ${blogPosts.length} blog posts.`);
