@@ -1308,3 +1308,43 @@ grid-template-columns: 1fr;
     height: auto;
   }
 }
+
+/* Fix individual episode artwork display */
+
+.episode-detail .episode-detail-grid {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  align-items: start;
+}
+
+.episode-detail-media {
+  background: #ffffff;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.episode-detail-artwork {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .episode-detail .episode-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .episode-detail-media {
+    padding: 18px;
+  }
+
+  .episode-detail-artwork {
+    max-width: 100%;
+    max-height: none;
+  }
+}
