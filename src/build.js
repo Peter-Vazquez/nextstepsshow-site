@@ -50,7 +50,38 @@ function escapeXml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
 }
+function absoluteUrl(pathName = "") {
+  const cleanPath = String(pathName || "").replace(/^\/+/, "");
+  return cleanPath ? `${SITE_URL}/${cleanPath}` : `${SITE_URL}/`;
+}
 
+function cleanMetaDescription(value, fallback = site.description) {
+  const text = stripHtml(value || fallback || "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (text.length <= 220) {
+    return text;
+  }
+
+  return `${text.slice(0, 217).trim()}...`;
+}
+
+function resolveSocialImage(imagePath) {
+  const fallbackImage = "images/site-logo.png?v=2";
+
+  if (!imagePath) {
+    return absoluteUrl(fallbackImage);
+  }
+
+  const value = String(imagePath).trim();
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  return absoluteUrl(value.replace(/^\/+/, ""));
+}
 function stripHtml(value) {
   if (!value) {
     return "";
@@ -427,7 +458,20 @@ function pageFooter(activePathPrefix = "../") {
   </footer>`;
 }
 
-function baseHtml({ title, description, cssPath, jsPath, body }) {
+function baseHtml({
+  title,
+  description,
+  cssPath,
+  jsPath,
+  body,
+  canonicalPath = "",
+  image = "images/site-logo.png?v=2",
+  type = "website"
+}) {
+  const metaDescription = cleanMetaDescription(description);
+  const canonicalUrl = absoluteUrl(canonicalPath);
+  const socialImageUrl = resolveSocialImage(image);
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -437,7 +481,20 @@ function baseHtml({ title, description, cssPath, jsPath, body }) {
 
   <title>${escapeHtml(title)}</title>
 
-  <meta name="description" content="${escapeHtml(description)}">
+  <meta name="description" content="${escapeHtml(metaDescription)}">
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+
+  <meta property="og:type" content="${escapeHtml(type)}">
+  <meta property="og:site_name" content="${escapeHtml(site.siteName)}">
+  <meta property="og:title" content="${escapeHtml(title)}">
+  <meta property="og:description" content="${escapeHtml(metaDescription)}">
+  <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
+  <meta property="og:image" content="${escapeHtml(socialImageUrl)}">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtml(title)}">
+  <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
+  <meta name="twitter:image" content="${escapeHtml(socialImageUrl)}">
 
   <link rel="stylesheet" href="${cssPath}">
 </head>
@@ -689,12 +746,14 @@ ${pageFooter(siteRootPrefix)}
 `;
 
   return baseHtml({
-    title: pageTitle,
-    description: `Listen to podcast episodes of ${site.siteName} with ${site.hostName}.`,
-    cssPath,
-    jsPath,
-    body
-  });
+  title: pageTitle,
+  description: `Listen to podcast episodes of ${site.siteName} with ${site.hostName}.`,
+  cssPath,
+  jsPath,
+  body,
+  canonicalPath: currentPage === 1 ? "episodes/" : `episodes/page/${currentPage}/`,
+  image: pageEpisodes[0]?.image || "images/site-logo.png?v=2"
+});
 }
 function generateHomePage(episodes) {
   const featuredEpisodes = episodes.slice(0, 3);
@@ -889,7 +948,9 @@ return baseHtml({
     description: site.description,
     cssPath: "css/styles.css",
     jsPath: "js/main.js",
-    body
+    body,
+    canonicalPath: "",
+    image: "images/hero.jpg"
   });
 }
 function getUniqueBlogTerms(posts, fieldName) {
@@ -1072,7 +1133,9 @@ ${pageFooter(activePathPrefix)}
     description: "Written commentary, show notes, video recaps, guest highlights, and issue analysis from The Next Steps Show.",
     cssPath,
     jsPath,
-    body
+    body,
+    canonicalPath: currentPage === 1 ? "blog/" : `blog/page/${currentPage}/`,
+    image: "images/hero.jpg"
   });
 }
 
@@ -1179,7 +1242,9 @@ ${pageFooter(activePathPrefix)}
     description: "Episode show notes, summaries, audio, and archive links from The Next Steps Show.",
     cssPath,
     jsPath,
-    body
+    body,
+    canonicalPath: currentPage === 1 ? "blog/show-notes/" : `blog/show-notes/page/${currentPage}/`,
+    image: pageEpisodes[0]?.image || "images/site-logo.png?v=2"
   });
 }
 
@@ -1248,11 +1313,14 @@ ${pageFooter("../../../")}
     description: episode.excerpt,
     cssPath: "../../../css/styles.css",
     jsPath: "../../../js/main.js",
-    body
+    body,
+    canonicalPath: `blog/show-notes/${episode.slug}/`,
+    image: episode.image || "images/site-logo.png?v=2",
+    type: "article"
   });
 }
 
-function generateBlogArchivePage({ title, description, posts, activePathPrefix, cssPath, jsPath }) {
+function generateBlogArchivePage({ title, description, posts, activePathPrefix, cssPath, jsPath, canonicalPath }) {
   const postCards = posts.length
     ? posts.map((post) => blogPostCard(post, activePathPrefix)).join("\n")
     : `
@@ -1307,7 +1375,9 @@ ${pageFooter(activePathPrefix)}
     description,
     cssPath,
     jsPath,
-    body
+    body,
+    canonicalPath,
+    image: "images/hero.jpg"
   });
 }
 function generateBlogPostPage(post) {
@@ -1367,7 +1437,10 @@ ${pageFooter("../../")}
     description: post.excerpt,
     cssPath: "../../css/styles.css",
     jsPath: "../../js/main.js",
-    body
+    body,
+    canonicalPath: `blog/${post.slug}/`,
+    image: post.image || "images/site-logo.png?v=2",
+    type: "article"
   });
 }
 
@@ -1426,7 +1499,10 @@ ${pageFooter("../../")}
     description: episode.excerpt,
     cssPath: "../../css/styles.css",
     jsPath: "../../js/main.js",
-    body
+    body,
+    canonicalPath: `episodes/${episode.slug}/`,
+    image: episode.image || "images/site-logo.png?v=2",
+    type: "article"
   });
 }
 function parseEpisodesFromRss(rssText) {
@@ -1531,13 +1607,14 @@ function generateBlogTaxonomyPages(posts) {
     ensureDir(categoryDir);
 
     const categoryHtml = generateBlogArchivePage({
-      title: `${category.label} Posts`,
-      description: `Read posts from The Next Steps Blog filed under ${category.label}.`,
-      posts: categoryPosts,
-      activePathPrefix: "../../../",
-      cssPath: "../../../css/styles.css",
-      jsPath: "../../../js/main.js"
-    });
+  title: `${category.label} Posts`,
+  description: `Read posts from The Next Steps Blog filed under ${category.label}.`,
+  posts: categoryPosts,
+  activePathPrefix: "../../../",
+  cssPath: "../../../css/styles.css",
+  jsPath: "../../../js/main.js",
+  canonicalPath: `blog/category/${category.slug}/`
+});
 
     fs.writeFileSync(path.join(categoryDir, "index.html"), categoryHtml, "utf8");
   }
@@ -1549,13 +1626,14 @@ function generateBlogTaxonomyPages(posts) {
     ensureDir(tagDir);
 
     const tagHtml = generateBlogArchivePage({
-      title: `${tag.label} Posts`,
-      description: `Read posts from The Next Steps Blog tagged with ${tag.label}.`,
-      posts: tagPosts,
-      activePathPrefix: "../../../",
-      cssPath: "../../../css/styles.css",
-      jsPath: "../../../js/main.js"
-    });
+  title: `${tag.label} Posts`,
+  description: `Read posts from The Next Steps Blog tagged with ${tag.label}.`,
+  posts: tagPosts,
+  activePathPrefix: "../../../",
+  cssPath: "../../../css/styles.css",
+  jsPath: "../../../js/main.js",
+  canonicalPath: `blog/tag/${tag.slug}/`
+});
 
     fs.writeFileSync(path.join(tagDir, "index.html"), tagHtml, "utf8");
   }
