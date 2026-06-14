@@ -3599,3 +3599,216 @@ grid-template-columns: 1fr;
 .platform-review-cta .button {
   display: inline-block;
 }
+
+/* NSRPN Online Radio page */
+
+.nsrpn-page {
+  background: var(--light);
+}
+
+.nsrpn-hero {
+  background:
+    linear-gradient(135deg, rgba(16,16,16,.94), rgba(16,16,16,.76)),
+    url("../images/hero.jpg");
+  background-position: center;
+  background-size: cover;
+  color: var(--light);
+  padding: 96px 0;
+}
+
+.nsrpn-hero-inner {
+  max-width: 980px;
+}
+
+.nsrpn-hero h1 {
+  color: var(--light);
+  font-size: clamp(2.75rem, 5vw, 5.15rem);
+  line-height: 1.04;
+  margin: 0 0 26px;
+}
+
+.nsrpn-hero p {
+  color: rgba(255,255,255,.9);
+  font-size: 1.2rem;
+  line-height: 1.75;
+  max-width: 860px;
+}
+
+.nsrpn-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.nsrpn-player-section,
+.nsrpn-purpose-section,
+.nsrpn-connection-section,
+.nsrpn-final-section {
+  padding: 76px 0;
+}
+
+.nsrpn-player-section,
+.nsrpn-connection-section {
+  background: #ffffff;
+}
+
+.nsrpn-purpose-section {
+  background: var(--muted);
+}
+
+.nsrpn-player-grid,
+.nsrpn-connection-grid {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr);
+  gap: 42px;
+}
+
+.nsrpn-player-copy h2,
+.nsrpn-connection-grid h2,
+.nsrpn-final-box h2 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.nsrpn-player-copy p,
+.nsrpn-connection-grid p,
+.nsrpn-final-box p {
+  line-height: 1.8;
+}
+
+.nsrpn-info-card,
+.nsrpn-links-card {
+  background: var(--dark);
+  border-top: 5px solid var(--gold);
+  box-shadow: 0 14px 36px rgba(0,0,0,.14);
+  color: var(--light);
+  padding: 32px;
+}
+
+.nsrpn-info-card h3,
+.nsrpn-links-card h3 {
+  color: var(--light);
+  margin-top: 0;
+}
+
+.nsrpn-info-card p,
+.nsrpn-links-card li {
+  color: rgba(255,255,255,.86);
+  line-height: 1.75;
+}
+
+.nsrpn-info-card a,
+.nsrpn-links-card a {
+  color: var(--light);
+  font-weight: 800;
+}
+
+.nsrpn-info-card a:hover,
+.nsrpn-links-card a:hover {
+  color: var(--gold);
+}
+
+.nsrpn-links-card ul {
+  margin-bottom: 0;
+  padding-left: 22px;
+}
+
+.nsrpn-centered-heading {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 920px;
+  text-align: center;
+}
+
+.nsrpn-centered-heading p {
+  line-height: 1.75;
+}
+
+.nsrpn-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 38px;
+}
+
+.nsrpn-feature-card {
+  background: #ffffff;
+  border-top: 4px solid var(--accent);
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  padding: 28px;
+}
+
+.nsrpn-feature-card h3 {
+  color: var(--dark);
+  margin-top: 0;
+}
+
+.nsrpn-feature-card p {
+  line-height: 1.72;
+}
+
+.nsrpn-final-section {
+  background: var(--dark);
+  color: var(--light);
+}
+
+.nsrpn-final-box {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+}
+
+.nsrpn-final-box h2 {
+  color: var(--light);
+}
+
+.nsrpn-final-box p {
+  color: rgba(255,255,255,.86);
+}
+
+.nsrpn-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+  .nsrpn-player-grid,
+  .nsrpn-connection-grid,
+  .nsrpn-final-box {
+    grid-template-columns: 1fr;
+  }
+
+  .nsrpn-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .nsrpn-hero {
+    padding: 70px 0;
+  }
+
+  .nsrpn-player-section,
+  .nsrpn-purpose-section,
+  .nsrpn-connection-section,
+  .nsrpn-final-section {
+    padding: 54px 0;
+  }
+
+  .nsrpn-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nsrpn-centered-heading {
+    text-align: left;
+  }
+
+  .nsrpn-final-actions {
+    justify-content: flex-start;
+  }
+}
