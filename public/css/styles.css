@@ -3581,3 +3581,21 @@ grid-template-columns: 1fr;
     justify-content: flex-start;
   }
 }
+
+/* Homepage review CTA */
+
+.platform-review-cta {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.platform-review-cta p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0 auto 18px;
+  max-width: 720px;
+}
+
+.platform-review-cta .button {
+  display: inline-block;
+}

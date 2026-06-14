@@ -419,6 +419,7 @@ function pageFooter(activePathPrefix = "../") {
           <a href="${activePathPrefix}guest/">Guest</a>
 		  <a href="${activePathPrefix}nsrpn-online-radio/">NSRPN Online Radio</a>
           <a href="${activePathPrefix}contact/">Contact</a>
+          <a href="${activePathPrefix}reviews/">Reviews</a>
           <a href="${activePathPrefix}advertise/">Sponsor Us</a>
         </div>
       </div>
@@ -916,6 +917,14 @@ ${latestEpisodeCards}
 
         <div class="platform-links">
           ${platformLinks}
+        </div>
+
+        <div class="platform-review-cta">
+          <p>
+            Already listening? Help the show reach one more person who needs the conversation.
+          </p>
+
+          <a href="reviews/" class="button primary">Rate and Review the Show</a>
         </div>
 
       </div>
