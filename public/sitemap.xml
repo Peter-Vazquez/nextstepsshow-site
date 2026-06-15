@@ -2356,6 +2356,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.nextstepsshow.com/blog/achieving-balance-in-pursuits-a-journey-of-faith-politics-and-entrepreneurship/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.nextstepsshow.com/blog/welcome-to-the-next-steps-blog/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -2366,7 +2371,22 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.nextstepsshow.com/blog/category/faith-and-culture/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://www.nextstepsshow.com/blog/tag/civic-responsibility/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/community/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/entrepreneurship/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2387,6 +2407,16 @@
   </url>
   <url>
     <loc>https://www.nextstepsshow.com/blog/tag/leadership/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/politics/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/purpose/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
