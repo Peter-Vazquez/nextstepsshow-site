@@ -51,11 +51,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.nextstepsshow.com/sponsors/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.nextstepsshow.com/nsrpn-online-radio/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

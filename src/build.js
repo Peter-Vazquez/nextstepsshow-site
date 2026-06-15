@@ -1785,7 +1785,6 @@ function generateSitemapXml({ episodes, blogPosts, episodeArchivePages, blogArch
   addUrl("contact/", { changefreq: "monthly", priority: "0.6" });
   addUrl("advertise/", { changefreq: "monthly", priority: "0.7" });
   addUrl("reviews/", { changefreq: "monthly", priority: "0.6" });
-  addUrl("sponsors/", { changefreq: "monthly", priority: "0.6" });
   addUrl("nsrpn-online-radio/", { changefreq: "weekly", priority: "0.8" });
 
   for (let pageNumber = 2; pageNumber <= episodeArchivePages; pageNumber++) {
