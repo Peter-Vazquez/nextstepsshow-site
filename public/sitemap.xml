@@ -2366,6 +2366,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.nextstepsshow.com/blog/unleashing-the-hero-within-a-journey-of-resilience-faith-and-empowerment/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.nextstepsshow.com/blog/category/commentary/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -2382,6 +2387,11 @@
   </url>
   <url>
     <loc>https://www.nextstepsshow.com/blog/tag/community/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/empowerment/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2417,6 +2427,11 @@
   </url>
   <url>
     <loc>https://www.nextstepsshow.com/blog/tag/purpose/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nextstepsshow.com/blog/tag/resilience/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
