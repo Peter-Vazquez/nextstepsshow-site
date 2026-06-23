@@ -39,6 +39,45 @@ if (menuToggle && mainNav) {
     return mainScript.src.replace(/main\.js(?:\?.*)?$/, "");
   }
 
+  function getSiteRoot() {
+    const base = getMainScriptBase();
+
+    if (!base) {
+      return "./";
+    }
+
+    return base.replace(/js\/$/, "");
+  }
+
+  function addSearchLink() {
+    const navs = Array.from(document.querySelectorAll(".main-nav, .footer-links"));
+    const searchHref = `${getSiteRoot()}search/`;
+
+    navs.forEach(function (nav) {
+      const hasSearchLink = Array.from(nav.querySelectorAll("a")).some(function (link) {
+        return link.getAttribute("href") && link.getAttribute("href").includes("search/");
+      });
+
+      if (hasSearchLink) {
+        return;
+      }
+
+      const searchLink = document.createElement("a");
+      searchLink.href = searchHref;
+      searchLink.textContent = "Search";
+
+      const contactLink = Array.from(nav.querySelectorAll("a")).find(function (link) {
+        return link.textContent.trim().toLowerCase() === "contact";
+      });
+
+      if (contactLink) {
+        nav.insertBefore(searchLink, contactLink);
+      } else {
+        nav.appendChild(searchLink);
+      }
+    });
+  }
+
   function enhanceGuestRoster() {
     const roster = document.getElementById("guest-roster");
 
@@ -102,9 +141,14 @@ if (menuToggle && mainNav) {
       });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", enhanceGuestRoster);
-  } else {
+  function initEnhancements() {
+    addSearchLink();
     enhanceGuestRoster();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initEnhancements);
+  } else {
+    initEnhancements();
   }
 }());
