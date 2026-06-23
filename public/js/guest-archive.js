@@ -21,6 +21,16 @@
 
   const assetRoot = getAssetRoot();
 
+  function normalize(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   function slugify(value) {
     return String(value || "")
       .toLowerCase()
@@ -135,6 +145,26 @@
           </article>`;
   }
 
+  function getGuestSearchQuery() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("guest") || params.get("search") || "";
+  }
+
+  function filterGuests(query) {
+    const cleanQuery = normalize(query);
+
+    if (!cleanQuery) {
+      return guests;
+    }
+
+    const tokens = cleanQuery.split(" ").filter((token) => token.length >= 2);
+
+    return guests.filter((guest) => {
+      const haystack = normalize(`${guest.name} ${guest.description}`);
+      return haystack.includes(cleanQuery) || tokens.every((token) => haystack.includes(token));
+    });
+  }
+
   function renderRecentGuests() {
     const grid = document.getElementById("recentGuestGrid");
     const summary = document.getElementById("recentGuestSummary");
@@ -152,7 +182,11 @@
     grid.innerHTML = recentGuests.map(renderGuestCard).join("\n");
   }
 
-  function getCurrentPage(totalPages) {
+  function getCurrentPage(totalPages, hasSearchQuery) {
+    if (hasSearchQuery) {
+      return 1;
+    }
+
     const params = new URLSearchParams(window.location.search);
     const requestedPage = Number(params.get("page") || "1");
 
@@ -163,7 +197,22 @@
     return Math.min(Math.floor(requestedPage), totalPages);
   }
 
-  function renderPagination(currentPage, totalPages) {
+  function buildPageHref(pageNumber, searchQuery) {
+    const params = new URLSearchParams();
+
+    if (pageNumber > 1) {
+      params.set("page", String(pageNumber));
+    }
+
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    }
+
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : "?page=1";
+  }
+
+  function renderPagination(currentPage, totalPages, searchQuery) {
     const pagination = document.getElementById("guestArchivePagination");
 
     if (!pagination) {
@@ -178,19 +227,19 @@
     let links = "";
 
     if (currentPage > 1) {
-      links += `<a href="?page=${currentPage - 1}">Previous</a>`;
+      links += `<a href="${buildPageHref(currentPage - 1, searchQuery)}">Previous</a>`;
     }
 
     for (let page = 1; page <= totalPages; page += 1) {
       if (page === currentPage) {
         links += `<span class="current-page">${page}</span>`;
       } else {
-        links += `<a href="?page=${page}">${page}</a>`;
+        links += `<a href="${buildPageHref(page, searchQuery)}">${page}</a>`;
       }
     }
 
     if (currentPage < totalPages) {
-      links += `<a href="?page=${currentPage + 1}">Next</a>`;
+      links += `<a href="${buildPageHref(currentPage + 1, searchQuery)}">Next</a>`;
     }
 
     pagination.innerHTML = links;
@@ -214,15 +263,32 @@
       return;
     }
 
-    const totalGuests = guests.length;
+    const searchQuery = getGuestSearchQuery();
+    const archiveGuests = filterGuests(searchQuery);
+    const totalGuests = archiveGuests.length;
     const totalPages = Math.max(1, Math.ceil(totalGuests / guestsPerPage));
-    const currentPage = getCurrentPage(totalPages);
+    const currentPage = getCurrentPage(totalPages, Boolean(searchQuery));
     const start = (currentPage - 1) * guestsPerPage;
-    const pageGuests = guests.slice(start, start + guestsPerPage);
+    const pageGuests = archiveGuests.slice(start, start + guestsPerPage);
 
-    summary.textContent = `${totalGuests} past guests. Showing page ${currentPage} of ${totalPages}.`;
+    if (searchQuery) {
+      summary.textContent = `${totalGuests} guest result${totalGuests === 1 ? "" : "s"} for "${searchQuery}".`;
+    } else {
+      summary.textContent = `${totalGuests} past guests. Showing page ${currentPage} of ${totalPages}.`;
+    }
+
+    if (!pageGuests.length) {
+      grid.innerHTML = `
+          <article class="guest-card guest-card-muted">
+            <h4>No Matching Guests</h4>
+            <p>No guest cards matched that search.</p>
+          </article>`;
+      renderPagination(1, 1, searchQuery);
+      return;
+    }
+
     grid.innerHTML = pageGuests.map(renderGuestCard).join("\n");
-    renderPagination(currentPage, totalPages);
+    renderPagination(currentPage, totalPages, searchQuery);
   }
 
   renderRecentGuests();
