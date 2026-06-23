@@ -21,6 +21,56 @@
 
   const assetRoot = getAssetRoot();
 
+  function slugify(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .substring(0, 90);
+  }
+
+  function extractEpisodeTitle(description) {
+    const marker = "Appeared for:";
+
+    if (!description || !description.includes(marker)) {
+      return "";
+    }
+
+    const title = description.split(marker).slice(1).join(marker).trim();
+
+    if (!title) {
+      return "";
+    }
+
+    return title.replace(/\.$/, "");
+  }
+
+  function buildEpisodeLink(description, explicitLink) {
+    if (explicitLink) {
+      return explicitLink;
+    }
+
+    const episodeTitle = extractEpisodeTitle(description);
+    const episodeSlug = slugify(episodeTitle);
+
+    if (!episodeSlug) {
+      return "";
+    }
+
+    return `${assetRoot}episodes/${episodeSlug}/`;
+  }
+
+  function buildEpisodeLabel(description, explicitLabel) {
+    if (explicitLabel) {
+      return explicitLabel;
+    }
+
+    return extractEpisodeTitle(description) || "Listen to Episode";
+  }
+
   const guests = rawGuestData
     .split("\n")
     .map((line) => line.trim())
@@ -28,11 +78,17 @@
     .map((line) => {
       const parts = line.split("\t");
       const name = parts[0] || "";
+      const description = parts[1] || "Past guest on The Next Steps Show.";
+      const image = parts[2] || guestImageMap[name] || "";
+      const episodeLink = buildEpisodeLink(description, parts[3] || "");
+      const episodeLabel = buildEpisodeLabel(description, parts[4] || "");
 
       return {
         name,
-        description: parts[1] || "Past guest on The Next Steps Show.",
-        image: parts[2] || guestImageMap[name] || ""
+        description,
+        image,
+        episodeLink,
+        episodeLabel
       };
     })
     .filter((guest) => guest.name);
@@ -66,12 +122,16 @@
     const imageHtml = imageSrc
       ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(guest.name)}" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:8px;margin-bottom:18px;">`
       : "";
+    const episodeHtml = guest.episodeLink
+      ? `<p><a class="episode-card-link" href="${escapeHtml(guest.episodeLink)}">Listen to Episode</a></p>`
+      : "";
 
     return `
           <article class="guest-card">
             ${imageHtml}
             <h4>${escapeHtml(guest.name)}</h4>
             <p>${escapeHtml(guest.description)}</p>
+            ${episodeHtml}
           </article>`;
   }
 
