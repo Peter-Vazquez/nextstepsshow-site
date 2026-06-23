@@ -1,6 +1,25 @@
 (function () {
   const guestsPerPage = 12;
   const rawGuestData = window.NSRPN_PAST_GUESTS_TSV || "";
+  const guestImageMap = {
+    "Joseph Hernandez": "Joseph-Hernandez.jpg",
+    "Ian Trottier": "Ian-Trottier.jpg"
+  };
+
+  function getAssetRoot() {
+    const scripts = Array.from(document.querySelectorAll("script[src]"));
+    const archiveScript = scripts.find(function (script) {
+      return script.src.includes("/js/guest-archive.js");
+    });
+
+    if (!archiveScript) {
+      return "";
+    }
+
+    return archiveScript.src.replace(/js\/guest-archive\.js(?:\?.*)?$/, "");
+  }
+
+  const assetRoot = getAssetRoot();
 
   const guests = rawGuestData
     .split("\n")
@@ -8,9 +27,12 @@
     .filter(Boolean)
     .map((line) => {
       const parts = line.split("\t");
+      const name = parts[0] || "";
+
       return {
-        name: parts[0] || "",
-        description: parts.slice(1).join(" ") || "Past guest on The Next Steps Show."
+        name,
+        description: parts[1] || "Past guest on The Next Steps Show.",
+        image: parts[2] || guestImageMap[name] || ""
       };
     })
     .filter((guest) => guest.name);
@@ -24,9 +46,30 @@
       .replace(/'/g, "&#039;");
   }
 
+  function buildImageSrc(filename) {
+    if (!filename) {
+      return "";
+    }
+
+    if (/^https?:\/\//i.test(filename)) {
+      return filename;
+    }
+
+    const cleanFilename = String(filename).replace(/^\/+/, "");
+    const encodedFilename = cleanFilename.split("/").map(encodeURIComponent).join("/");
+
+    return `${assetRoot}images/guests/${encodedFilename}`;
+  }
+
   function renderGuestCard(guest) {
+    const imageSrc = buildImageSrc(guest.image);
+    const imageHtml = imageSrc
+      ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(guest.name)}" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:8px;margin-bottom:18px;">`
+      : "";
+
     return `
           <article class="guest-card">
+            ${imageHtml}
             <h4>${escapeHtml(guest.name)}</h4>
             <p>${escapeHtml(guest.description)}</p>
           </article>`;
