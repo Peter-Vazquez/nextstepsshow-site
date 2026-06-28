@@ -150,6 +150,23 @@
     return params.get("guest") || params.get("search") || "";
   }
 
+  function setGuestSearchQuery(query) {
+    const params = new URLSearchParams(window.location.search);
+
+    params.delete("guest");
+    params.delete("page");
+
+    if (query) {
+      params.set("search", query);
+    } else {
+      params.delete("search");
+    }
+
+    const queryString = params.toString();
+    const nextUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    window.history.replaceState({}, "", nextUrl);
+  }
+
   function filterGuests(query) {
     const cleanQuery = normalize(query);
 
@@ -248,6 +265,7 @@
   function renderGuestArchive() {
     const grid = document.getElementById("guestArchiveGrid");
     const summary = document.getElementById("guestArchiveSummary");
+    const searchInput = document.getElementById("guestArchiveSearchInput");
 
     if (!grid || !summary) {
       return;
@@ -264,6 +282,11 @@
     }
 
     const searchQuery = getGuestSearchQuery();
+
+    if (searchInput && searchInput.value !== searchQuery) {
+      searchInput.value = searchQuery;
+    }
+
     const archiveGuests = filterGuests(searchQuery);
     const totalGuests = archiveGuests.length;
     const totalPages = Math.max(1, Math.ceil(totalGuests / guestsPerPage));
@@ -291,6 +314,29 @@
     renderPagination(currentPage, totalPages, searchQuery);
   }
 
+  function initGuestArchiveSearch() {
+    const searchForm = document.getElementById("guestArchiveSearchForm");
+    const searchInput = document.getElementById("guestArchiveSearchInput");
+
+    if (!searchForm || !searchInput) {
+      return;
+    }
+
+    searchInput.value = getGuestSearchQuery();
+
+    searchForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      setGuestSearchQuery(searchInput.value.trim());
+      renderGuestArchive();
+    });
+
+    searchInput.addEventListener("input", function () {
+      setGuestSearchQuery(searchInput.value.trim());
+      renderGuestArchive();
+    });
+  }
+
+  initGuestArchiveSearch();
   renderRecentGuests();
   renderGuestArchive();
 }());
