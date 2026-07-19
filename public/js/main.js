@@ -63,6 +63,17 @@ if (menuToggle && mainNav) {
       return;
     }
 
+    const upcomingGroup = groups[0];
+    upcomingGroup.innerHTML = `
+        <h3>Upcoming Guests</h3>
+
+        <div class="guest-card-grid">
+          <article class="guest-card guest-card-muted">
+            <h4>New Guest Announcements Coming Soon</h4>
+            <p>Confirmed upcoming guests will appear here once approved for public promotion.</p>
+          </article>
+        </div>`;
+
     const recentGroup = groups[1];
     recentGroup.innerHTML = `
         <h3>Recent Guests</h3>
