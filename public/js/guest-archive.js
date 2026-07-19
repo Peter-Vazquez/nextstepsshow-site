@@ -133,7 +133,7 @@
       ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(guest.name)}" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:8px;margin-bottom:18px;">`
       : "";
     const episodeHtml = guest.episodeLink
-      ? `<p><a class="episode-card-link" href="${escapeHtml(guest.episodeLink)}">Listen to Episode</a></p>`
+      ? `<p class="guest-episode-link-wrap" hidden><a class="episode-card-link" data-guest-episode-link href="${escapeHtml(guest.episodeLink)}">Listen to Episode</a></p>`
       : "";
 
     return `
@@ -143,6 +143,45 @@
             <p>${escapeHtml(guest.description)}</p>
             ${episodeHtml}
           </article>`;
+  }
+
+  function validateEpisodeLinks(container) {
+    if (!container) {
+      return;
+    }
+
+    const links = Array.from(container.querySelectorAll("[data-guest-episode-link]"));
+
+    links.forEach(function (link) {
+      const wrapper = link.closest(".guest-episode-link-wrap");
+      const target = new URL(link.href, window.location.href);
+
+      if (target.origin !== window.location.origin) {
+        if (wrapper) {
+          wrapper.hidden = false;
+        }
+        return;
+      }
+
+      fetch(target.href, { method: "HEAD", cache: "no-store" })
+        .then(function (response) {
+          if (response.ok) {
+            if (wrapper) {
+              wrapper.hidden = false;
+            }
+            return;
+          }
+
+          if (wrapper) {
+            wrapper.remove();
+          }
+        })
+        .catch(function () {
+          if (wrapper) {
+            wrapper.remove();
+          }
+        });
+    });
   }
 
   function getGuestSearchQuery() {
@@ -197,13 +236,10 @@
     }
 
     grid.innerHTML = recentGuests.map(renderGuestCard).join("\n");
+    validateEpisodeLinks(grid);
   }
 
-  function getCurrentPage(totalPages, hasSearchQuery) {
-    if (hasSearchQuery) {
-      return 1;
-    }
-
+  function getCurrentPage(totalPages) {
     const params = new URLSearchParams(window.location.search);
     const requestedPage = Number(params.get("page") || "1");
 
@@ -214,22 +250,18 @@
     return Math.min(Math.floor(requestedPage), totalPages);
   }
 
-  function buildPageHref(pageNumber, searchQuery) {
+  function buildPageHref(pageNumber) {
     const params = new URLSearchParams();
 
     if (pageNumber > 1) {
       params.set("page", String(pageNumber));
     }
 
-    if (searchQuery) {
-      params.set("search", searchQuery);
-    }
-
     const queryString = params.toString();
     return queryString ? `?${queryString}` : "?page=1";
   }
 
-  function renderPagination(currentPage, totalPages, searchQuery) {
+  function renderPagination(currentPage, totalPages) {
     const pagination = document.getElementById("guestArchivePagination");
 
     if (!pagination) {
@@ -244,19 +276,19 @@
     let links = "";
 
     if (currentPage > 1) {
-      links += `<a href="${buildPageHref(currentPage - 1, searchQuery)}">Previous</a>`;
+      links += `<a href="${buildPageHref(currentPage - 1)}">Previous</a>`;
     }
 
     for (let page = 1; page <= totalPages; page += 1) {
       if (page === currentPage) {
         links += `<span class="current-page">${page}</span>`;
       } else {
-        links += `<a href="${buildPageHref(page, searchQuery)}">${page}</a>`;
+        links += `<a href="${buildPageHref(page)}">${page}</a>`;
       }
     }
 
     if (currentPage < totalPages) {
-      links += `<a href="${buildPageHref(currentPage + 1, searchQuery)}">Next</a>`;
+      links += `<a href="${buildPageHref(currentPage + 1)}">Next</a>`;
     }
 
     pagination.innerHTML = links;
@@ -290,9 +322,9 @@
     const archiveGuests = filterGuests(searchQuery);
     const totalGuests = archiveGuests.length;
     const totalPages = Math.max(1, Math.ceil(totalGuests / guestsPerPage));
-    const currentPage = getCurrentPage(totalPages, Boolean(searchQuery));
+    const currentPage = searchQuery ? 1 : getCurrentPage(totalPages);
     const start = (currentPage - 1) * guestsPerPage;
-    const pageGuests = archiveGuests.slice(start, start + guestsPerPage);
+    const pageGuests = searchQuery ? archiveGuests : archiveGuests.slice(start, start + guestsPerPage);
 
     if (searchQuery) {
       summary.textContent = `${totalGuests} guest result${totalGuests === 1 ? "" : "s"} for "${searchQuery}".`;
@@ -306,12 +338,18 @@
             <h4>No Matching Guests</h4>
             <p>No guest cards matched that search.</p>
           </article>`;
-      renderPagination(1, 1, searchQuery);
+      renderPagination(1, 1);
       return;
     }
 
     grid.innerHTML = pageGuests.map(renderGuestCard).join("\n");
-    renderPagination(currentPage, totalPages, searchQuery);
+    validateEpisodeLinks(grid);
+
+    if (searchQuery) {
+      renderPagination(1, 1);
+    } else {
+      renderPagination(currentPage, totalPages);
+    }
   }
 
   function initGuestArchiveSearch() {
