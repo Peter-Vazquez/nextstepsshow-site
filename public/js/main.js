@@ -8,24 +8,10 @@ if (menuToggle && mainNav) {
 }
 
 (function () {
-  function loadScript(src) {
-    return new Promise(function (resolve, reject) {
-      const existingScript = document.querySelector(`script[src="${src}"]`);
-
-      if (existingScript) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = src;
-      script.defer = true;
-      script.onload = resolve;
-      script.onerror = reject;
-      document.body.appendChild(script);
+  function getMainScript() {
+    return Array.from(document.querySelectorAll("script[src]")).find(function (script) {
+      return script.src.includes("/js/main.js");
     });
   }
 
-  function getMainScriptBase() {
-    const scripts = Array.from(document.querySelectorAll("script[src]"));
-    const
+  function
