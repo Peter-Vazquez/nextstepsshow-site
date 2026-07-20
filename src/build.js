@@ -398,63 +398,73 @@ function pageFooter(activePathPrefix = "../") {
   const copyrightYear = site.copyrightYear || new Date().getFullYear();
 
   return `
-  <footer class="site-footer">
-    <div class="container footer-grid">
+  <footer class="site-footer site-footer-modern">
+    <div class="container footer-modern-main">
 
-      <div class="footer-brand">
-        <img src="${activePathPrefix}images/site-logo.png?v=2" alt="${escapeHtml(site.siteName)} logo" class="footer-logo">
-        <p>
-          ${escapeHtml(site.description)}
+      <div class="footer-modern-brand">
+        <img
+          src="${activePathPrefix}images/site-logo.png?v=2"
+          alt="${escapeHtml(site.siteName)} logo"
+          class="footer-modern-logo"
+        >
+
+        <p class="footer-modern-tagline">
+          Faith. Politics. Entrepreneurship. Leadership.
         </p>
       </div>
 
-      <div>
-        <h3 class="footer-heading">Explore</h3>
-        <div class="footer-links">
-          <a href="${activePathPrefix}">Home</a>
-          <a href="${activePathPrefix}mission/">Mission</a>
-          <a href="${activePathPrefix}episodes/">Pods</a>
-          <a href="${activePathPrefix}videos/">Vids</a>
-          <a href="${activePathPrefix}blog/">Blog</a>
-          <a href="${activePathPrefix}guest/">Guest</a>
-		  <a href="${activePathPrefix}nsrpn-online-radio/">NSRPN Online Radio</a>
-          <a href="${activePathPrefix}contact/">Contact</a>
-          <a href="${activePathPrefix}reviews/">Reviews</a>
-          <a href="${activePathPrefix}advertise/">Sponsor Us</a>
+      <nav class="footer-modern-nav" aria-label="Footer navigation">
+        <a href="${activePathPrefix}">Home</a>
+        <a href="${activePathPrefix}episodes/">Episodes</a>
+        <a href="${activePathPrefix}guest/">Guests</a>
+        <a href="${activePathPrefix}blog/">Blog</a>
+        <a href="${activePathPrefix}advertise/">Sponsor</a>
+        <a href="${activePathPrefix}contact/">Contact</a>
+      </nav>
+
+      <div class="footer-modern-live">
+        <span class="footer-modern-kicker">Live Weekdays at Noon</span>
+
+        <div class="footer-modern-stations">
+          <div class="footer-modern-station">
+            <strong>WYSL</strong>
+            <span>92.1 FM · 95.5 FM · 1040 AM</span>
+          </div>
+
+          <div class="footer-modern-station">
+            <strong>WLEA</strong>
+            <span>92.1 FM · 106.9 FM · 1480 AM</span>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h3 class="footer-heading">Listen Live</h3>
-        <p>${escapeHtml(site.liveSchedule || "Listen live, Monday through Friday at noon.")}</p>
-        <p class="footer-stations">
-          ${escapeHtml(site.stationLine || "WYSL 92.1 FM | 95.5 FM | 1040 AM")}
-        </p>
-        <a href="${escapeHtml(site.wyslLiveStream)}" target="_blank" rel="noopener" class="footer-button">
-          WYSL Live Stream
-        </a>
-      </div>
+        <div class="footer-modern-actions">
+          <a
+            href="${escapeHtml(site.wyslLiveStream)}"
+            target="_blank"
+            rel="noopener"
+            class="footer-modern-primary"
+          >
+            Listen Live
+          </a>
 
-      <div>
-        <h3 class="footer-heading">Join the Conversation</h3>
-        <p>
-          Call in:<br>
-          <a href="tel:15853463000">${escapeHtml(site.callInLocal || "(585) 346-3000")}</a>
-        </p>
-        <p>
-          Toll-free:<br>
-          <a href="tel:18665521009">${escapeHtml(site.callInTollFree || "(866) 552-1009")}</a>
-        </p>
-        <p>
-          Text Peter:<br>
-          <a href="sms:15858807580">${escapeHtml(site.textLine || "(585) 880-7580")}</a>
-        </p>
+          <a
+            href="${activePathPrefix}contact/"
+            class="footer-modern-secondary"
+          >
+            Contact the Show
+          </a>
+        </div>
       </div>
 
     </div>
 
-    <div class="container footer-bottom">
-      <p>&copy; ${escapeHtml(String(copyrightYear))} ${escapeHtml(site.siteName)}. All rights reserved.</p>
+    <div class="container footer-modern-bottom">
+      <p>
+        &copy; ${escapeHtml(String(copyrightYear))}
+        ${escapeHtml(site.siteName)}. All rights reserved.
+      </p>
+
+      <p>Hosted by Peter Vazquez</p>
     </div>
   </footer>`;
 }
@@ -498,6 +508,7 @@ function baseHtml({
   <meta name="twitter:image" content="${escapeHtml(socialImageUrl)}">
 
   <link rel="stylesheet" href="${cssPath}">
+  
 </head>
 
 <body>
