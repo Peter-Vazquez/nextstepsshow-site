@@ -12,20 +12,4 @@ if (menuToggle && mainNav) {
     return new Promise(function (resolve, reject) {
       const existingScript = document.querySelector(`script[src="${src}"]`);
 
-      if (existingScript) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = src;
-      script.defer = true;
-      script.onload = resolve;
-      script.onerror = reject;
-      document.body.appendChild(script);
-    });
-  }
-
-  function getMainScriptBase() {
-    const scripts = Array.from(document.querySelectorAll("script[src]"));
-    const
+      if (existing
