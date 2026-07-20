@@ -1873,7 +1873,8 @@ async function build() {
   ensureDir(blogDir);
 
   const rssText = await fetchRssFeed();
-  const episodes = parseEpisodesFromRss(rssText);
+  const episodes = parseEpisodesFromRss(rssText)
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   if (!episodes.length) {
     throw new Error("No episodes were found in the RSS feed.");
