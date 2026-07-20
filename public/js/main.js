@@ -8,10 +8,8 @@ if (menuToggle && mainNav) {
 }
 
 (function () {
-  function getMainScript() {
-    return Array.from(document.querySelectorAll("script[src]")).find(function (script) {
-      return script.src.includes("/js/main.js");
-    });
-  }
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      const existingScript = document.querySelector(`script[src="${src}"]`);
 
-  function
+      if (existing
