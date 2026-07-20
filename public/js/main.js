@@ -16,3 +16,16 @@ if (menuToggle && mainNav) {
         resolve();
         return;
       }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.defer = true;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
+
+  function getMainScriptBase() {
+    const scripts = Array.from(document.querySelectorAll("script[src]"));
+    const
