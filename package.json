@@ -4,7 +4,7 @@
   "description": "Static website for The Next Steps Show powered by Podbean RSS and GitHub Pages.",
   "main": "src/build.js",
   "scripts": {
-    "build": "node src/build.js"
+    "build": "node src/build.js && node src/ensure-sitemap-manual-pages.js"
   },
   "dependencies": {
     "fast-xml-parser": "^4.5.0",
